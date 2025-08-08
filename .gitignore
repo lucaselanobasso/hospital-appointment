@@ -1,0 +1,35 @@
+# Node modules
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+
+# Build output
+/dist
+/build
+
+# VSCode
+.vscode/
+
+# Others
+*.env.local
+*.env.development
+*.env.production
+
+# Optional: ignore coverage and test output
+coverage/
+
+# Optional: ignore IDE files
+.idea/
+*.sublime-workspace
+*.sublime-project

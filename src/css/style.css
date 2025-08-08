@@ -1,0 +1,23 @@
+body {
+  background-color: #fff;
+}
+.navbar.bg-success {
+  background-color: #198754 !important;
+}
+.navbar-brand, .nav-link {
+  color: #fff !important;
+}
+.btn-success {
+  background-color: #198754;
+  border-color: #198754;
+}
+.btn-success:hover {
+  background-color: #157347;
+  border-color: #157347;
+}
+.card {
+  border: 1px solid #198754;
+}
+.text-success {
+  color: #198754 !important;
+}
