@@ -81,6 +81,10 @@ function renderLogin() {
             <input type='email' class='form-control' id='email' required>
           </div>
           <div class='mb-3'>
+            <label for='cpf' class='form-label'>CPF</label>
+            <input type='text' class='form-control' id='cpf' required maxlength='11' placeholder='Somente números, 11 dígitos'>
+          </div>
+          <div class='mb-3'>
             <label for='password' class='form-label'>Senha</label>
             <input type='password' class='form-control' id='password' required>
           </div>
@@ -96,17 +100,24 @@ function renderLogin() {
   document.getElementById('loginForm').onsubmit = async function(e) {
     e.preventDefault();
     const email = document.getElementById('email').value;
+  let cpf = document.getElementById('cpf').value;
+  cpf = cpf.replace(/\D/g, '');
+  if (cpf.length !== 11) {
+    document.getElementById('loginMsg').textContent = 'CPF deve conter 11 dígitos numéricos.';
+    return;
+  }
     const password = document.getElementById('password').value;
     try {
       const res = await fetch('http://localhost:3001/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, cpf })
       });
       const data = await res.json();
       if (data.success) {
         currentUser = data.user;
-        location.hash = 'home';
+        document.getElementById('loginMsg').textContent = data.message || 'Login realizado com sucesso!';
+        setTimeout(() => { location.hash = 'home'; }, 1000);
       } else {
         document.getElementById('loginMsg').textContent = data.error || 'Erro ao logar.';
       }
@@ -128,6 +139,10 @@ function renderCadastro() {
             <input type='text' class='form-control' id='name' required>
           </div>
           <div class='mb-3'>
+            <label for='cpf' class='form-label'>CPF</label>
+            <input type='text' class='form-control' id='cpf' required maxlength='11' placeholder='Somente números, 11 dígitos'>
+          </div>
+          <div class='mb-3'>
             <label for='email' class='form-label'>Email</label>
             <input type='email' class='form-control' id='email' required>
           </div>
@@ -147,17 +162,24 @@ function renderCadastro() {
   document.getElementById('cadastroForm').onsubmit = async function(e) {
     e.preventDefault();
     const name = document.getElementById('name').value;
+  let cpf = document.getElementById('cpf').value;
+  cpf = cpf.replace(/\D/g, '');
+  if (cpf.length !== 11) {
+    document.getElementById('cadastroMsg').textContent = 'CPF deve conter 11 dígitos numéricos.';
+    return;
+  }
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     try {
       const res = await fetch('http://localhost:3001/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
+        body: JSON.stringify({ name, email, password, cpf })
       });
       const data = await res.json();
       if (data.success) {
-        location.hash = 'login';
+        document.getElementById('cadastroMsg').textContent = data.message || 'Cadastro realizado com sucesso!';
+        setTimeout(() => { location.hash = 'login'; }, 1000);
       } else {
         document.getElementById('cadastroMsg').textContent = data.error || 'Erro ao cadastrar.';
       }
@@ -178,16 +200,29 @@ function renderAgendar() {
     .then(res => res.json())
     .then(doctors => {
       const especialidades = [...new Set(doctors.map(d => d.specialty))];
+      // Tipos de serviço dinâmicos
+      const tiposServico = [
+        'Presencial',
+        'Online (Telemedicina)',
+        'Retorno',
+        'Exame',
+        'Consulta de rotina',
+        'Avaliação inicial',
+        'Acompanhamento',
+        'Urgência',
+        'Orientação',
+        'Vacinação'
+      ];
       appDiv.innerHTML = `
         <div class='card mx-auto' style='max-width:500px;'>
           <div class='card-body'>
             <h2 class='text-success text-center'>Agendar Consulta</h2>
             <form id='agendarForm'>
               <div class='mb-3'>
-                <label class='form-label'>Tipo de Consulta</label>
+                <label class='form-label'>Tipo de Serviço</label>
                 <select class='form-select' id='tipoConsulta' required>
-                  <option value='presencial'>Presencial</option>
-                  <option value='online'>Online (Telemedicina)</option>
+                  <option value=''>Selecione</option>
+                  ${tiposServico.map(t => `<option value='${t}'>${t}</option>`).join('')}
                 </select>
               </div>
               <div class='mb-3'>
@@ -211,7 +246,7 @@ function renderAgendar() {
               </div>
               <button type='submit' class='btn btn-success w-100'>Confirmar</button>
             </form>
-            <div id='agendarMsg' class='mt-2 text-danger text-center'></div>
+            <div id='agendarMsg' class='mt-2 text-center'></div>
           </div>
         </div>
       `;
@@ -226,7 +261,6 @@ function renderAgendar() {
         if (medicos.length > 0) {
           medicoSelect.innerHTML = medicos.map(m => `<option value='${m.id}'>${m.name}</option>`).join('');
           medicoSelect.disabled = false;
-          // Habilita horários se já houver médico selecionado
           medicoSelect.dispatchEvent(new Event('change'));
         } else {
           medicoSelect.innerHTML = '';
@@ -253,7 +287,10 @@ function renderAgendar() {
         const medicoId = document.getElementById('medico').value;
         const data = document.getElementById('data').value;
         const horario = document.getElementById('horario').value;
-        if (!tipo || !especialidade || !medicoId || !data || !horario) return;
+        if (!tipo || !especialidade || !medicoId || !data || !horario) {
+          showMessage('agendarMsg', 'Preencha todos os campos.', false);
+          return;
+        }
         try {
           const res = await fetch('http://localhost:3001/api/appointments', {
             method: 'POST',
@@ -262,15 +299,25 @@ function renderAgendar() {
           });
           const result = await res.json();
           if (result.success) {
-            appDiv.innerHTML = `<div class='alert alert-success text-center'>Agendamento realizado com sucesso!<br>Você receberá uma confirmação fictícia.</div><a href='#meus-agendamentos' class='btn btn-success w-100'>Ver meus agendamentos</a>`;
+            appDiv.innerHTML = `<div class='alert alert-success text-center' style='font-size:1.3em;color:#198754;'>${result.message || 'Agendamento realizado com sucesso!'}<br>Você receberá uma confirmação por e-mail.</div><a href='#meus-agendamentos' class='btn btn-success w-100'>Ver meus agendamentos</a>`;
           } else {
-            document.getElementById('agendarMsg').textContent = 'Erro ao agendar.';
+            showMessage('agendarMsg', result.error || 'Erro ao agendar.', false);
           }
         } catch {
-          document.getElementById('agendarMsg').textContent = 'Erro de conexão.';
+          showMessage('agendarMsg', 'Erro de conexão.', false);
         }
       };
     });
+
+// Função para exibir mensagens estilizadas
+function showMessage(elementId, msg, success = true) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = success ? '#198754' : '#dc3545';
+  el.style.fontWeight = 'bold';
+  el.style.fontSize = '1.2em';
+}
 }
 
 // Renderização da página Meus Agendamentos
@@ -293,7 +340,7 @@ function renderMeusAgendamentos() {
           <div class='card mb-2'>
             <div class='card-body'>
               <strong>Especialidade:</strong> ${a.specialty || ''}<br>
-              <strong>Médico:</strong> ${getDoctorName(a.doctorId)}<br>
+              <strong>Médico:</strong> ${a.doctorName || ''}<br>
               <strong>Tipo:</strong> ${a.type}<br>
               <strong>Data:</strong> ${a.date}<br>
               <strong>Horário:</strong> ${a.time}<br>
@@ -320,7 +367,10 @@ window.cancelAgendamento = async function(idx) {
     const res = await fetch(`http://localhost:3001/api/appointments/${idx}`, { method: 'DELETE' });
     const result = await res.json();
     if (result.success) {
+      alert(result.message || 'Agendamento cancelado com sucesso!');
       renderMeusAgendamentos();
+    } else {
+      alert(result.error || 'Erro ao cancelar agendamento.');
     }
   } catch {}
 };
