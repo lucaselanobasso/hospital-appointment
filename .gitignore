@@ -1,3 +1,5 @@
+# Não versionar o arquivo de lock do npm
+package-lock.json
 package-lock.json
 
 # Node modules

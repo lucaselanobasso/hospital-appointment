@@ -8,7 +8,7 @@ function renderPage(page) {
   updateMenu();
   switch(page) {
     case 'home':
-      appDiv.innerHTML = `<div class='text-center'><h1 class='text-success'>Bem-vindo ao Hospital Verde</h1><p>Agende sua consulta de forma rápida e segura.</p><a href='#agendar' class='btn btn-success btn-lg'>Agendar Horário</a></div>`;
+  appDiv.innerHTML = `<div class='text-center'><h1 class='text-success'>Bem-vindo ao Hospital Verde</h1><p>Agende sua consulta de forma rápida e segura.</p><a href='#agendar' class='btn btn-success btn-lg' id='btnAgendarHome'>Agendar Horário</a></div>`;
       break;
     case 'login':
       renderLogin();
@@ -38,16 +38,16 @@ function updateMenu() {
   const nav = document.querySelector('.navbar-nav');
   if (!nav) return;
   let menuHtml = `
-    <li class="nav-item"><a class="nav-link text-white" href="#home">Home</a></li>
-    <li class="nav-item"><a class="nav-link text-white" href="#agendar">Agendar</a></li>
-    <li class="nav-item"><a class="nav-link text-white" href="#meus-agendamentos">Meus Agendamentos</a></li>
-    <li class="nav-item"><a class="nav-link text-white" href="#sobre">Sobre Nós</a></li>
-    <li class="nav-item"><a class="nav-link text-white" href="#contato">Contato</a></li>
+    <li class="nav-item"><a class="nav-link text-white" href="#home" id="menuHome">Home</a></li>
+    <li class="nav-item"><a class="nav-link text-white" href="#agendar" id="menuAgendar">Agendar</a></li>
+    <li class="nav-item"><a class="nav-link text-white" href="#meus-agendamentos" id="menuMeusAgendamentos">Meus Agendamentos</a></li>
+    <li class="nav-item"><a class="nav-link text-white" href="#sobre" id="menuSobre">Sobre Nós</a></li>
+    <li class="nav-item"><a class="nav-link text-white" href="#contato" id="menuContato">Contato</a></li>
   `;
   if (currentUser) {
-    menuHtml += `<li class="nav-item"><a class="nav-link text-white" href="#" id="logoutBtn">Sair</a></li>`;
+  menuHtml += `<li class="nav-item"><a class="nav-link text-white" href="#" id="logoutBtn">Sair</a></li>`;
   } else {
-    menuHtml += `<li class="nav-item"><a class="nav-link text-white" href="#login">Login</a></li>`;
+  menuHtml += `<li class="nav-item"><a class="nav-link text-white" href="#login" id="menuLogin">Login</a></li>`;
   }
   nav.innerHTML = menuHtml;
   const logoutBtn = document.getElementById('logoutBtn');
@@ -78,35 +78,43 @@ function renderLogin() {
         <form id='loginForm'>
           <div class='mb-3'>
             <label for='email' class='form-label'>Email</label>
-            <input type='email' class='form-control' id='email' required>
+            <input type='email' class='form-control' id='email'>
           </div>
           <div class='mb-3'>
             <label for='cpf' class='form-label'>CPF</label>
-            <input type='text' class='form-control' id='cpf' required maxlength='11' placeholder='Somente números, 11 dígitos'>
+            <input type='text' class='form-control' id='cpf' maxlength='11' placeholder='Somente números, 11 dígitos'>
           </div>
           <div class='mb-3'>
             <label for='password' class='form-label'>Senha</label>
-            <input type='password' class='form-control' id='password' required>
+            <input type='password' class='form-control' id='password'>
           </div>
-          <button type='submit' class='btn btn-success w-100'>Entrar</button>
+          <button type='submit' class='btn btn-success w-100' id='btnEntrar'>Entrar</button>
         </form>
         <div class='mt-3 text-center'>
-          <a href='#cadastro' class='text-success'>Criar conta</a>
+          <a href='#cadastro' class='text-success' id='linkCriarConta'>Criar conta</a>
         </div>
-        <div id='loginMsg' class='mt-2 text-danger text-center'></div>
+  <div id='loginMsg' class='mt-2 form-message'></div>
+  <div id='errorCamposLogin' class='mt-2 form-message'></div>
       </div>
     </div>
   `;
   document.getElementById('loginForm').onsubmit = async function(e) {
     e.preventDefault();
-    const email = document.getElementById('email').value;
-  let cpf = document.getElementById('cpf').value;
-  cpf = cpf.replace(/\D/g, '');
-  if (cpf.length !== 11) {
-    document.getElementById('loginMsg').textContent = 'CPF deve conter 11 dígitos numéricos.';
-    return;
-  }
-    const password = document.getElementById('password').value;
+    let valid = true;
+    const email = document.getElementById('email').value.trim();
+    const cpfInput = document.getElementById('cpf').value.trim();
+    const password = document.getElementById('password').value.trim();
+    document.getElementById('errorCamposLogin').textContent = '';
+    document.getElementById('loginMsg').textContent = '';
+    let cpf = cpfInput.replace(/\D/g, '');
+    if (!email || !cpfInput || !password) {
+      document.getElementById('errorCamposLogin').textContent = 'Todos os campos são obrigatórios';
+      return;
+    }
+    if (cpf.length !== 11) {
+      document.getElementById('errorCamposLogin').textContent = 'CPF deve conter 11 dígitos numéricos.';
+      return;
+    }
     try {
       const res = await fetch('http://localhost:3001/api/login', {
         method: 'POST',
@@ -136,40 +144,48 @@ function renderCadastro() {
         <form id='cadastroForm'>
           <div class='mb-3'>
             <label for='name' class='form-label'>Nome</label>
-            <input type='text' class='form-control' id='name' required>
+            <input type='text' class='form-control' id='name'>
           </div>
           <div class='mb-3'>
             <label for='cpf' class='form-label'>CPF</label>
-            <input type='text' class='form-control' id='cpf' required maxlength='11' placeholder='Somente números, 11 dígitos'>
+            <input type='text' class='form-control' id='cpf' maxlength='11' placeholder='Somente números, 11 dígitos'>
           </div>
           <div class='mb-3'>
             <label for='email' class='form-label'>Email</label>
-            <input type='email' class='form-control' id='email' required>
+            <input type='email' class='form-control' id='email'>
           </div>
           <div class='mb-3'>
             <label for='password' class='form-label'>Senha</label>
-            <input type='password' class='form-control' id='password' required>
+            <input type='password' class='form-control' id='password'>
           </div>
-          <button type='submit' class='btn btn-success w-100'>Cadastrar</button>
+          <button type='submit' class='btn btn-success w-100' id='btnCadastrar'>Cadastrar</button>
         </form>
         <div class='mt-3 text-center'>
-          <a href='#login' class='text-success'>Já tenho conta</a>
+          <a href='#login' class='text-success' id='linkJaTenhoConta'>Já tenho conta</a>
         </div>
-        <div id='cadastroMsg' class='mt-2 text-danger text-center'></div>
+  <div id='cadastroMsg' class='mt-2 form-message'></div>
+  <div id='errorCamposCadastro' class='mt-2 form-message'></div>
       </div>
     </div>
   `;
   document.getElementById('cadastroForm').onsubmit = async function(e) {
     e.preventDefault();
-    const name = document.getElementById('name').value;
-  let cpf = document.getElementById('cpf').value;
-  cpf = cpf.replace(/\D/g, '');
-  if (cpf.length !== 11) {
-    document.getElementById('cadastroMsg').textContent = 'CPF deve conter 11 dígitos numéricos.';
-    return;
-  }
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+    let valid = true;
+    const name = document.getElementById('name').value.trim();
+    const cpfInput = document.getElementById('cpf').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    document.getElementById('errorCamposCadastro').textContent = '';
+    document.getElementById('cadastroMsg').textContent = '';
+    let cpf = cpfInput.replace(/\D/g, '');
+    if (!name || !cpfInput || !email || !password) {
+      document.getElementById('errorCamposCadastro').textContent = 'Todos os campos são obrigatórios';
+      return;
+    }
+    if (cpf.length !== 11) {
+      document.getElementById('errorCamposCadastro').textContent = 'CPF deve conter 11 dígitos numéricos.';
+      return;
+    }
     try {
       const res = await fetch('http://localhost:3001/api/register', {
         method: 'POST',
@@ -178,8 +194,10 @@ function renderCadastro() {
       });
       const data = await res.json();
       if (data.success) {
-        document.getElementById('cadastroMsg').textContent = data.message || 'Cadastro realizado com sucesso!';
-        setTimeout(() => { location.hash = 'login'; }, 1000);
+  const msgDiv = document.getElementById('cadastroMsg');
+  msgDiv.textContent = data.message || 'Cadastro realizado com sucesso! Redirecionando para a página de login...';
+  msgDiv.className = 'mt-2 form-message form-message-success';
+  setTimeout(() => { location.hash = 'login'; }, 1000);
       } else {
         document.getElementById('cadastroMsg').textContent = data.error || 'Erro ao cadastrar.';
       }
@@ -244,9 +262,9 @@ function renderAgendar() {
                 <label class='form-label'>Horário</label>
                 <select class='form-select' id='horario' required disabled></select>
               </div>
-              <button type='submit' class='btn btn-success w-100'>Confirmar</button>
+              <button type='submit' class='btn btn-success w-100' id='btnConfirmarAgendamento'>Confirmar</button>
             </form>
-            <div id='agendarMsg' class='mt-2 text-center'></div>
+            <div id='agendarMsg' class='mt-2 form-message'></div>
           </div>
         </div>
       `;
@@ -299,7 +317,7 @@ function renderAgendar() {
           });
           const result = await res.json();
           if (result.success) {
-            appDiv.innerHTML = `<div class='alert alert-success text-center' style='font-size:1.3em;color:#198754;'>${result.message || 'Agendamento realizado com sucesso!'}<br>Você receberá uma confirmação por e-mail.</div><a href='#meus-agendamentos' class='btn btn-success w-100'>Ver meus agendamentos</a>`;
+            appDiv.innerHTML = `<div class='alert alert-success text-center' style='font-size:1.3em;color:#198754;'>${result.message || 'Agendamento realizado com sucesso!'}<br>Você receberá uma confirmação por e-mail.</div><a href='#meus-agendamentos' class='btn btn-success w-100' id='btnVerMeusAgendamentos'>Ver meus agendamentos</a>`;
           } else {
             showMessage('agendarMsg', result.error || 'Erro ao agendar.', false);
           }
@@ -314,9 +332,7 @@ function showMessage(elementId, msg, success = true) {
   const el = document.getElementById(elementId);
   if (!el) return;
   el.textContent = msg;
-  el.style.color = success ? '#198754' : '#dc3545';
-  el.style.fontWeight = 'bold';
-  el.style.fontSize = '1.2em';
+  el.className = 'mt-2 form-message';
 }
 }
 
@@ -344,7 +360,7 @@ function renderMeusAgendamentos() {
               <strong>Tipo:</strong> ${a.type}<br>
               <strong>Data:</strong> ${a.date}<br>
               <strong>Horário:</strong> ${a.time}<br>
-              <button class='btn btn-outline-danger btn-sm mt-2' onclick='cancelAgendamento(${idx})'>Cancelar</button>
+              <button class='btn btn-outline-danger btn-sm mt-2' onclick='cancelAgendamento(${idx})' id='btnCancelarAgendamento${idx}'>Cancelar</button>
             </div>
           </div>
         `;

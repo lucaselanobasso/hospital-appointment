@@ -10,7 +10,17 @@
 //
 //
 // -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
+Cypress.Commands.add("cadastro", (nome, cpf, email, senha) => {
+  cy.get("#menuLogin").click()
+  cy.url().should("include", "#login")
+  cy.get("#linkCriarConta").click()
+  cy.url().should("include", "#cadastro")
+  cy.get("#name").type(nome)
+  cy.get("#cpf").type(cpf)
+  cy.get("#email").type(email)
+  cy.get("#password").type(senha)
+  cy.get("#btnCadastrar").click()
+})
 //
 //
 // -- This is a child command --
