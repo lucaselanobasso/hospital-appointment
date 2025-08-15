@@ -40,3 +40,5 @@ coverage/
 
 
 
+cypress\reports\
+cypress\screenshots\

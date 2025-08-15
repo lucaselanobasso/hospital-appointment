@@ -10,17 +10,7 @@
 //
 //
 // -- This is a parent command --
-Cypress.Commands.add("cadastro", (nome, cpf, email, senha) => {
-  cy.get("#menuLogin").click()
-  cy.url().should("include", "#login")
-  cy.get("#linkCriarConta").click()
-  cy.url().should("include", "#cadastro")
-  cy.get("#name").type(nome)
-  cy.get("#cpf").type(cpf)
-  cy.get("#email").type(email)
-  cy.get("#password").type(senha)
-  cy.get("#btnCadastrar").click()
-})
+
 //
 //
 // -- This is a child command --
@@ -33,3 +23,12 @@ Cypress.Commands.add("cadastro", (nome, cpf, email, senha) => {
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+//Importando comandos comuns
+import './commands/common'
+
+//Importando comandos de cadastro
+import './commands/cadastro'
+
+//Importando comandos de login
+import './commands/login'

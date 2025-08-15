@@ -1,88 +1,325 @@
 
-# Hospital Verde - Sistema de Agendamento de Consultas
+# 🏥 Hospital Verde - Sistema de Agendamento de Consultas
 
-## Descrição
-Aplicação web fictícia para agendamento de consultas médicas, com interface intuitiva, responsiva e visual moderno nas cores verde e branco. Não utiliza banco de dados, apenas variáveis em memória.
+<div align="center">
 
-## Funcionalidades
-- Cadastro/Login de clientes
-- Agendamento de consultas (presencial ou telemedicina)
-- Seleção de especialidade e médico
-- Escolha de data e horário
-- Confirmação e resumo do agendamento
-- Cancelamento/Reagendamento
-- Páginas: Home, Login, Cadastro, Agendar, Meus Agendamentos, Sobre Nós, Contato
+![Hospital Verde](https://img.shields.io/badge/Hospital-Verde-success?style=for-the-badge)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)
+![Cypress](https://img.shields.io/badge/Cypress-17202C?style=for-the-badge&logo=cypress&logoColor=white)
+![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)
 
-## Requisitos Funcionais
-1. **Acessar a funcionalidade**
-   - O cliente deve conseguir acessar a tela de agendamento a partir do site do hospital.
-2. **Cadastro/Login**
-   - O cliente deve poder fazer login com seus dados já cadastrados.
-   - Caso não tenha cadastro, o cliente deve poder criar uma conta antes de agendar.
-3. **Escolha do tipo de consulta**
-   - O sistema deve permitir que o cliente selecione se a consulta será **presencial** ou **online (telemedicina)**.
-4. **Seleção de especialidade médica**
-   - O cliente deve poder escolher a especialidade desejada (ex.: cardiologia, ortopedia, dermatologia).
-5. **Escolha do médico**
-   - O cliente deve poder selecionar o médico desejado, caso haja mais de um disponível para a especialidade.
-6. **Escolha de data e horário**
-   - O sistema deve exibir um calendário com as datas e horários disponíveis para a especialidade e médico escolhidos.
-   - O cliente deve poder selecionar um horário disponível.
-7. **Confirmação de dados**
-   - Antes de finalizar, o sistema deve exibir um resumo da consulta (médico, data, horário, especialidade, valor se houver).
-8. **Confirmação do agendamento**
-   - O cliente deve confirmar o agendamento e receber uma mensagem de sucesso na tela.
-9. **Envio de confirmação**
-   - O sistema deve enviar um e-mail e/ou mensagem no celular com os detalhes da consulta. (essa parte será fictícia, não precisará de nenhuma integração com mensagem enviada para o e-mail).
-10. **Cancelamento ou reagendamento**
-   - O cliente deve poder cancelar ou reagendar a consulta, seguindo as regras do hospital (ex.: até 24h antes).
+</div>
 
+## 📋 Sobre o Projeto
 
+Este é um **Projeto de Portfólio Pessoal** desenvolvido como parte da **Mentoria 2.0 em Testes de Software** do **Julio de Lima**. O sistema Hospital Verde é uma aplicação web completa para agendamento de consultas médicas, criada inicialmente por IA generativa e posteriormente expandida com testes automatizados.
 
-## Pré-requisitos
-- Node.js instalado ([Download](https://nodejs.org/en/download/))
+### 🎯 Objetivo do Projeto
+- **Demonstrar habilidades** em desenvolvimento web full-stack
+- **Implementar testes automatizados** usando Cypress
+- **Aplicar boas práticas** de desenvolvimento e documentação
+- **Criar um portfólio** profissional em testes de software
 
-## Variáveis de Ambiente
-O backend e o frontend suportam configuração via arquivo `.env` na raiz do projeto. Exemplo:
+## ✨ Funcionalidades Principais
 
+### 🔐 **Sistema de Autenticação**
+- Cadastro de novos usuários com validações completas
+- Login seguro com CPF, email e senha
+- Menu dinâmico baseado no status de autenticação
+- Logout via dropdown do usuário
+
+### 👨‍⚕️ **Catálogo de Médicos**
+- Página pública "Nossos Doutores" com informações completas
+- Filtros dinâmicos por especialidade e nome
+- Modal detalhado com dados profissionais, contato e certificações
+- Integração direta com sistema de agendamento
+
+### 📅 **Sistema de Agendamento Inteligente**
+- Processo em cascata: Forma de atendimento → Tipo de serviço → Especialidade → Médico → Data → Horário
+- Validações de antecedência (24h presencial, 2h online)
+- Prevenção de conflitos de horários
+- Resumo antes da confirmação
+
+### 📊 **Gerenciamento de Consultas**
+- Lista personalizada de agendamentos por usuário
+- Cancelamento com validações de prazo
+- Histórico completo de consultas
+
+## 🔧 Arquitetura Técnica
+
+### **Frontend (SPA)**
+- **Tecnologia**: JavaScript Vanilla + Bootstrap 5
+- **Arquitetura**: Single Page Application com roteamento hash
+- **Responsividade**: Design mobile-first
+- **UI/UX**: Interface moderna nas cores verde e branco
+
+### **Backend (API REST)**
+- **Tecnologia**: Node.js + Express
+- **Documentação**: Swagger UI completa
+- **Armazenamento**: Dados em memória (sem banco de dados)
+- **Validações**: Client-side e server-side
+
+### **Testes**
+- **Framework**: Cypress para testes E2E
+- **Cobertura**: Cenários de cadastro, login e agendamento
+- **Relatórios**: Mochawesome para relatórios visuais
+
+## 📋 Requisitos Funcionais Implementados
+
+### ✅ **RF01 - Acessar Funcionalidade**
+O cliente acessa o agendamento através da página inicial do hospital.
+
+### ✅ **RF02 - Cadastro/Login**
+- Login com dados existentes (email, CPF, senha)
+- Cadastro de nova conta com validações completas
+
+### ✅ **RF03 - Escolha do Tipo de Consulta**
+Seleção entre consulta **presencial** ou **online (telemedicina)**.
+
+### ✅ **RF04 - Seleção de Especialidade**
+Escolha entre: Cardiologia, Ortopedia, Dermatologia, Pediatria, Ginecologia.
+
+### ✅ **RF05 - Escolha do Médico**
+Lista filtrada de médicos por especialidade selecionada.
+
+### ✅ **RF06 - Escolha de Data e Horário**
+- Calendário com datas disponíveis
+- Horários dinâmicos baseados na disponibilidade
+
+### ✅ **RF07 - Confirmação de Dados**
+Resumo completo antes da finalização do agendamento.
+
+### ✅ **RF08 - Confirmação do Agendamento**
+Mensagem de sucesso e redirecionamento para "Meus Agendamentos".
+
+### ✅ **RF09 - Simulação de Confirmação**
+Mensagem fictícia de envio de confirmação por email/SMS.
+
+### ✅ **RF10 - Cancelamento**
+Cancelamento respeitando regras de antecedência.
+
+## ⚖️ Regras de Negócio Implementadas
+
+| Regra | Descrição | Status |
+|-------|-----------|--------|
+| **RN01** | Conflito de horário - Médico não pode ter dois agendamentos simultâneos | ✅ |
+| **RN02** | Datas passadas - Não permite agendamento em datas/horários anteriores | ✅ |
+| **RN03** | Horários do médico - Apenas horários disponíveis são exibidos | ✅ |
+| **RN04** | Campos obrigatórios - Todos os campos devem estar preenchidos | ✅ |
+| **RN05** | Especialidade-médico - Médicos filtrados por especialidade | ✅ |
+| **RN06** | Serviços por especialidade - Serviços compatíveis com cada área | ✅ |
+| **RN07** | Horário funcionamento - Limitado ao horário do hospital (07:00-18:00) | ✅ |
+| **RN08** | Antecedência presencial - Mínimo 24 horas de antecedência | ✅ |
+| **RN09** | Antecedência online - Mínimo 2 horas de antecedência | ✅ |
+| **RN10** | Limite diário - Máximo uma consulta por médico/dia por paciente | ✅ |
+| **RN11** | Cancelamento presencial - Até 24 horas antes | ✅ |
+| **RN12** | Cancelamento online - Até 1 hora antes | ✅ |
+
+## 🚀 Como Executar o Projeto
+
+### **Pré-requisitos**
+- Node.js 16+ instalado ([Download](https://nodejs.org/en/download/))
+- Git instalado ([Download](https://git-scm.com/downloads))
+
+### **1. 📥 Instalação**
+
+```bash
+# Clone o repositório
+git clone <url-do-repositorio>
+cd hospital-appointment
+
+# Instale as dependências
+npm install
 ```
+
+### **2. ⚙️ Configuração (Opcional)**
+
+Crie um arquivo `.env` na raiz do projeto para personalizar as portas:
+
+```env
 # Porta do backend
 PORT=3001
-# Porta do frontend
+# Porta do frontend (se usar servidor separado)
 FRONTEND_PORT=5000
 ```
 
-Se o arquivo `.env` não existir, serão usadas as portas padrão 3001 (backend) e 5000 (frontend).
+### **3. 🏃‍♂️ Executando a Aplicação**
 
-Para usar variáveis de ambiente, instale o pacote dotenv:
-```powershell
-npm install dotenv
-```
-
-
-## Instalação
-1. Clone o repositório ou baixe os arquivos
-2. Instale as dependências do backend:
-   ```powershell
-   npm install express cors
-   ```
-
-## Como rodar o projeto
-
-
-### Backend (API)
-Execute o comando abaixo na raiz do projeto:
-```powershell
+#### **Opção 1: Servidor Único (Recomendado)**
+```bash
 npm run start:backend
 ```
-O backend ficará disponível em http://localhost:3001
+- **Backend API**: http://localhost:3001
+- **Frontend**: http://localhost:3001
+- **Documentação API**: http://localhost:3001/api-docs
 
-### Frontend (site)
-Execute o comando abaixo na raiz do projeto:
-```powershell
+#### **Opção 2: Servidores Separados**
+```bash
+# Terminal 1 - Backend
+npm run start:backend
+
+# Terminal 2 - Frontend (se necessário)
 npm run start:frontend
 ```
-O frontend ficará disponível em http://localhost:5000
+
+### **4. 🧪 Executando os Testes**
+
+```bash
+# Testes em modo headless
+npm test
+
+# Testes com interface gráfica
+npm run test:headed
+
+# Abrir Cypress Test Runner
+npm run test:open
+```
+
+## 📱 Como Usar a Aplicação
+
+### **🔐 Primeiro Acesso**
+
+1. **Acesse**: http://localhost:3001
+2. **Cadastre-se**: Clique em "Login" → "Criar conta"
+3. **Preencha**: Nome, CPF (11 dígitos), email e senha
+4. **Faça login**: Use os dados cadastrados
+
+### **👨‍⚕️ Explorando os Médicos**
+
+1. **Clique**: "Nossos Doutores" (disponível sem login)
+2. **Filtre**: Por especialidade ou busque por nome
+3. **Veja detalhes**: Clique "Ver Detalhes" em qualquer médico
+4. **Agende direto**: Use "Agendar Consulta" no modal
+
+### **📅 Agendando uma Consulta**
+
+1. **Faça login** primeiro
+2. **Clique**: "Agendar Horário"
+3. **Siga o processo**:
+   - Forma de atendimento (Presencial/Online)
+   - Tipo de serviço
+   - Especialidade
+   - Médico
+   - Data (respeitando antecedência)
+   - Horário disponível
+4. **Confirme**: Revise o resumo e confirme
+
+### **📋 Gerenciando Agendamentos**
+
+1. **Acesse**: "Meus Agendamentos"
+2. **Visualize**: Todas suas consultas
+3. **Cancele**: Se necessário (respeitando prazos)
+
+## 🧪 Dados de Teste
+
+### **Usuários Pré-cadastrados**
+```
+Email: lucasbasso@gmail.com
+CPF: 00100200304
+Senha: 123456
+
+Email: juliodelima@gmail.com  
+CPF: 10020030040
+Senha: 123456
+
+Email: carlosandrada@gmail.com
+CPF: 11122233344
+Senha: 123456
+```
+
+### **Especialidades Disponíveis**
+- **Cardiologia**: 3 médicos
+- **Ortopedia**: 3 médicos  
+- **Dermatologia**: 3 médicos
+- **Pediatria**: 3 médicos
+- **Ginecologia**: 3 médicos
+
+## 📚 Documentação da API
+
+### **Swagger UI**
+Acesse http://localhost:3001/api-docs para documentação interativa completa.
+
+### **Endpoints Principais**
+```
+POST /api/register     # Cadastrar usuário
+POST /api/login        # Fazer login
+GET  /api/doctors      # Listar médicos
+POST /api/appointments # Criar agendamento
+GET  /api/appointments/:email # Agendamentos do usuário
+DELETE /api/appointments/:id  # Cancelar agendamento
+```
+
+## 🏗️ Estrutura do Projeto
+
+```
+hospital-appointment/
+├── 📁 public/              # Frontend (SPA)
+│   ├── index.html         # Página principal
+│   ├── app.js            # Lógica da aplicação
+│   └── style.css         # Estilos customizados
+├── 📁 src/
+│   └── 📁 api/           # Backend
+│       ├── server.js     # Servidor Express
+│       └── swagger.js    # Configuração Swagger
+├── 📁 cypress/           # Testes E2E
+│   ├── 📁 e2e/          # Cenários de teste
+│   ├── 📁 fixtures/     # Dados de teste
+│   └── 📁 support/      # Comandos customizados
+├── package.json          # Dependências e scripts
+└── README.md            # Este arquivo
+```
+
+## 🛠️ Tecnologias Utilizadas
+
+### **Frontend**
+- **JavaScript ES6+**: Lógica da aplicação
+- **Bootstrap 5**: Framework CSS responsivo
+- **HTML5**: Estrutura semântica
+- **CSS3**: Estilos customizados
+
+### **Backend**
+- **Node.js**: Runtime JavaScript
+- **Express.js**: Framework web
+- **Swagger**: Documentação da API
+- **CORS**: Controle de acesso
+
+### **Testes**
+- **Cypress**: Framework de testes E2E
+- **Mochawesome**: Relatórios de teste
+
+### **Ferramentas**
+- **NPM**: Gerenciador de pacotes
+- **Git**: Controle de versão
+- **VS Code**: Editor recomendado
+
+## 🎯 Próximos Passos
+
+Este projeto faz parte de um portfólio em desenvolvimento. Os próximos passos incluem:
+
+- ✅ **Aplicação completa** (Concluído)
+- ✅ **API documentada** (Concluído)
+- 🔄 **Testes automatizados** (Em desenvolvimento)
+- 📊 **Relatórios de cobertura** (Planejado)
+- 🚀 **Deploy em produção** (Planejado)
+
+## 👨‍💻 Sobre o Desenvolvedor
+
+Projeto desenvolvido como parte da **Mentoria 2.0 em Testes de Software** do **Julio de Lima**, focando em:
+
+- Desenvolvimento full-stack
+- Testes automatizados com Cypress
+- Boas práticas de documentação
+- Criação de portfólio profissional
+
+## 📄 Licença
+
+Este projeto foi desenvolvido para fins educacionais e de portfólio.
 
 ---
-Desenvolvido para fins didáticos.
+
+<div align="center">
+  <strong>🏥 Hospital Verde - Cuidando da sua saúde com tecnologia</strong>
+</div>
