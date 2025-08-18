@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/package.json",
   "name": "hospital-appointment",
   "version": "1.0.0",
   "description": "",
