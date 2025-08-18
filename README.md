@@ -3,35 +3,68 @@
 
 <div align="center">
 
-![Hospital Verde](https://img.shields.io/badge/Hospital-Verde-success?style=for-the-badge)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![Bootstrap](https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)
-![Cypress](https://img.shields.io/badge/Cypress-17202C?style=for-the-badge&logo=cypress&logoColor=white)
-![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)
+![Status](https://img.shields.io/badge/Status-Produção-success)
+![Versão](https://img.shields.io/badge/Versão-1.0.0-blue)
+![Licença](https://img.shields.io/badge/Licença-ISC-green)
+![Node](https://img.shields.io/badge/Node.js-16+-green)
+![Testes](https://img.shields.io/badge/Testes-Cypress-brightgreen)
+![API](https://img.shields.io/badge/API-Swagger-orange)
+
+**Sistema completo de agendamento hospitalar com 15 médicos, 5 especialidades e validações robustas**
 
 </div>
 
 ## 📋 Sobre o Projeto
 
-Este é um **Projeto de Portfólio Pessoal** desenvolvido como parte da **Mentoria 2.0 em Testes de Software** do **Julio de Lima**. O sistema Hospital Verde é uma aplicação web completa para agendamento de consultas médicas, criada inicialmente por IA generativa e posteriormente expandida com testes automatizados.
+Sistema de agendamento de consultas médicas desenvolvido como **projeto de portfólio profissional**, implementando regras de negócio hospitalares complexas, validações em tempo real e cobertura completa de testes automatizados.
 
-### 🎯 Objetivo do Projeto
-- **Demonstrar habilidades** em desenvolvimento web full-stack
-- **Implementar testes automatizados** usando Cypress
-- **Aplicar boas práticas** de desenvolvimento e documentação
-- **Criar um portfólio** profissional em testes de software
+**Contexto**: Projeto desenvolvido durante a **Mentoria de Testes de Software 2.0** do **Julio de Lima**, focando em qualidade de software, testes automatizados e boas práticas de desenvolvimento.
 
-## ✨ Funcionalidades Principais
+### 🎯 Principais Características
 
-### 🔐 **Sistema de Autenticação**
-- Cadastro de novos usuários com validações completas
-- Login seguro com CPF, email e senha
-- Menu dinâmico baseado no status de autenticação
-- Logout via dropdown do usuário
+- ✅ **15 médicos** distribuídos em 5 especialidades
+- ✅ **Agendamento inteligente** com validações em cascata
+- ✅ **Consultas presenciais e online** (telemedicina)
+- ✅ **Regras de antecedência** diferenciadas por tipo
+- ✅ **Testes automatizados** com Cypress
+- ✅ **API documentada** com Swagger/OpenAPI 3.0
 
-### 👨‍⚕️ **Catálogo de Médicos**
+## 🏗️ Arquitetura Técnica
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend SPA  │◄──►│   Backend API   │◄──►│  Dados Memória  │
+│  (Vanilla JS)   │    │   (Express.js)  │    │   (JSON Store)  │
+│   Bootstrap 5   │    │   Swagger UI    │    │   15 Médicos    │
+│     834 linhas  │    │   559 linhas    │    │   3 Usuários    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         ▲                       ▲
+         │                       │
+┌─────────────────┐    ┌─────────────────┐
+│ Cypress E2E     │    │ Swagger Docs    │
+│ (Testes Auto)   │    │ (OpenAPI 3.0)   │
+│ Mochawesome     │    │ Schemas         │
+└─────────────────┘    └─────────────────┘
+```
+
+### 🔧 Stack Tecnológica
+
+#### Frontend (SPA)
+- **JavaScript ES6+** - Lógica de negócio (834 linhas)
+- **Bootstrap 5.3** - Framework CSS responsivo
+- **HTML5 Semântico** - Estrutura acessível
+- **CSS3 Customizado** - Tema verde hospitalar
+
+#### Backend (API REST)
+- **Node.js + Express** - Servidor web (559 linhas)
+- **CORS** - Política de origem cruzada
+- **Swagger UI** - Documentação interativa
+- **JSON Storage** - Dados em memória
+
+#### Testes & Qualidade
+- **Cypress** - Testes end-to-end
+- **Mochawesome Reporter** - Relatórios visuais
+- **Custom Commands** - Comandos reutilizáveis
 - Página pública "Nossos Doutores" com informações completas
 - Filtros dinâmicos por especialidade e nome
 - Modal detalhado com dados profissionais, contato e certificações
