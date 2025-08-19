@@ -27,6 +27,11 @@ describe("Cadastro", () => {
     cy.cadastro("NovoUsuario Oliveira", "1234567", uniqueEmail, users.password)
     cy.contemTexto("#cadastro-message", "CPF deve conter 11 dígitos numéricos.")
   })
+  it('Ao tentar cadastrar com e-mail inválido, deve retornar o erro "E-mail inválido."', () => {
+    const cpfUnico = geraCPF()
+    cy.cadastro("NovoUsuario Oliveira", cpfUnico, 'email@email', users.password)
+    cy.contemTexto("#cadastro-message", "Email inválido.")
+  })
   it('Ao tentar cadastrar usuário sem informar todos os campos, deve retornar o erro "Todos os campos são obrigatórios."', () => {
     const cpfUnico = geraCPF()
     const uniqueEmail = `usuario_${Date.now()}@teste.com`
@@ -40,11 +45,7 @@ describe("Cadastro", () => {
     cy.get("#btnCadastrar").click()
     cy.contemTexto("#cadastro-message", "Todos os campos são obrigatórios")
   })
-  it('Ao tentar cadastrar com e-mail inválido, deve retornar o erro "E-mail inválido."', () => {
-    const cpfUnico = geraCPF()
-    cy.cadastro("NovoUsuario Oliveira", cpfUnico, 'email@email', users.password)
-    cy.contemTexto("#cadastro-message", "Email inválido.")
-  })
+  
   it('Ao tentar cadastrar com o nome com caractéres inválidos, deve retornar erro "Nome inválido."', () => {
     const cpfUnico = geraCPF()
     const uniqueEmail = `usuario_${Date.now()}@teste.com`

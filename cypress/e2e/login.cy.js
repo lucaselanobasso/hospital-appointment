@@ -53,4 +53,12 @@ describe("Login", () => {
       cy.contemTexto("#login-message", "Todos os campos são obrigatórios")
     })
   })
+  describe('Logout', ()=>{
+    it('Ao clicar no nome do usuário e clicar em Sair, deve ser redirecionado para a página de login', ()=>{
+      cy.login(users.email, users.cpf, users.password)
+      cy.get('#userDropdown').click()
+      cy.get('#logoutBtn').click()
+      cy.get('#menuLogin').should('be.visible')
+    })
+  })
 })

@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const { swaggerUi, specs } = require('./swagger');
+const dataManager = require('./dataManager');
 
 const path = require('path');
 const app = express();
@@ -27,195 +28,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../../public/index.html'));
 });
 
-// Dados em memória
-let users = [
-  {
-    name: 'Lucas Basso',
-    email: 'lucasbasso@gmail.com',
-    password: '123456',
-    cpf: '00100200304'
-  },
-  {
-    name: 'Julio de Lima',
-    email: 'juliodelima@gmail.com',
-    password: '123456',
-    cpf: '10020030040'
-  },
-  {
-    name: 'Carlos Andrada',
-    email: 'carlosandrada@gmail.com',
-    password: '123456',
-    cpf: '11122233344'
-  }
-];
-let appointments = [];
-let doctors = [
-  { 
-    id: 1, 
-    name: 'Dr. João Silva', 
-    specialty: 'Cardiologia',
-    phone: '(11) 98765-4321',
-    email: 'joao.silva@hospitalverde.com',
-    crm: 'CRM/SP 123456',
-    certificate: 'Especialista em Cardiologia - Sociedade Brasileira de Cardiologia',
-    experience: '15 anos de experiência',
-    description: 'Especialista em cardiologia clínica e intervencionista'
-  },
-  { 
-    id: 2, 
-    name: 'Dra. Maria Oliveira', 
-    specialty: 'Ortopedia',
-    phone: '(11) 98765-4322',
-    email: 'maria.oliveira@hospitalverde.com',
-    crm: 'CRM/SP 234567',
-    certificate: 'Especialista em Ortopedia e Traumatologia - SBOT',
-    experience: '12 anos de experiência',
-    description: 'Especialista em cirurgia ortopédica e traumatologia'
-  },
-  { 
-    id: 3, 
-    name: 'Dr. Pedro Santos', 
-    specialty: 'Dermatologia',
-    phone: '(11) 98765-4323',
-    email: 'pedro.santos@hospitalverde.com',
-    crm: 'CRM/SP 345678',
-    certificate: 'Especialista em Dermatologia - Sociedade Brasileira de Dermatologia',
-    experience: '10 anos de experiência',
-    description: 'Especialista em dermatologia clínica e cirúrgica'
-  },
-  { 
-    id: 4, 
-    name: 'Dr. Ana Costa', 
-    specialty: 'Cardiologia',
-    phone: '(11) 98765-4324',
-    email: 'ana.costa@hospitalverde.com',
-    crm: 'CRM/SP 456789',
-    certificate: 'Especialista em Cardiologia - Sociedade Brasileira de Cardiologia',
-    experience: '18 anos de experiência',
-    description: 'Especialista em ecocardiografia e cardiologia preventiva'
-  },
-  { 
-    id: 5, 
-    name: 'Dr. Lucas Lima', 
-    specialty: 'Ortopedia',
-    phone: '(11) 98765-4325',
-    email: 'lucas.lima@hospitalverde.com',
-    crm: 'CRM/SP 567890',
-    certificate: 'Especialista em Ortopedia e Traumatologia - SBOT',
-    experience: '8 anos de experiência',
-    description: 'Especialista em cirurgia do joelho e medicina esportiva'
-  },
-  { 
-    id: 6, 
-    name: 'Dra. Fernanda Souza', 
-    specialty: 'Dermatologia',
-    phone: '(11) 98765-4326',
-    email: 'fernanda.souza@hospitalverde.com',
-    crm: 'CRM/SP 678901',
-    certificate: 'Especialista em Dermatologia - Sociedade Brasileira de Dermatologia',
-    experience: '14 anos de experiência',
-    description: 'Especialista em dermatologia estética e oncológica'
-  },
-  { 
-    id: 7, 
-    name: 'Dr. Rafael Mendes', 
-    specialty: 'Pediatria',
-    phone: '(11) 98765-4327',
-    email: 'rafael.mendes@hospitalverde.com',
-    crm: 'CRM/SP 789012',
-    certificate: 'Especialista em Pediatria - Sociedade Brasileira de Pediatria',
-    experience: '11 anos de experiência',
-    description: 'Especialista em pediatria geral e neonatologia'
-  },
-  { 
-    id: 8, 
-    name: 'Dra. Paula Borges', 
-    specialty: 'Pediatria',
-    phone: '(11) 98765-4328',
-    email: 'paula.borges@hospitalverde.com',
-    crm: 'CRM/SP 890123',
-    certificate: 'Especialista em Pediatria - Sociedade Brasileira de Pediatria',
-    experience: '16 anos de experiência',
-    description: 'Especialista em pediatria e adolescência'
-  },
-  { 
-    id: 9, 
-    name: 'Dr. Bruno Tavares', 
-    specialty: 'Ginecologia',
-    phone: '(11) 98765-4329',
-    email: 'bruno.tavares@hospitalverde.com',
-    crm: 'CRM/SP 901234',
-    certificate: 'Especialista em Ginecologia e Obstetrícia - FEBRASGO',
-    experience: '13 anos de experiência',
-    description: 'Especialista em ginecologia e obstetrícia'
-  },
-  { 
-    id: 10, 
-    name: 'Dra. Carla Farias', 
-    specialty: 'Ginecologia',
-    phone: '(11) 98765-4330',
-    email: 'carla.farias@hospitalverde.com',
-    crm: 'CRM/SP 012345',
-    certificate: 'Especialista em Ginecologia e Obstetrícia - FEBRASGO',
-    experience: '20 anos de experiência',
-    description: 'Especialista em ginecologia oncológica'
-  },
-  { 
-    id: 11, 
-    name: 'Dr. Gustavo Nunes', 
-    specialty: 'Cardiologia',
-    phone: '(11) 98765-4331',
-    email: 'gustavo.nunes@hospitalverde.com',
-    crm: 'CRM/SP 123457',
-    certificate: 'Especialista em Cardiologia - Sociedade Brasileira de Cardiologia',
-    experience: '9 anos de experiência',
-    description: 'Especialista em arritmias cardíacas'
-  },
-  { 
-    id: 12, 
-    name: 'Dra. Juliana Prado', 
-    specialty: 'Ortopedia',
-    phone: '(11) 98765-4332',
-    email: 'juliana.prado@hospitalverde.com',
-    crm: 'CRM/SP 234568',
-    certificate: 'Especialista em Ortopedia e Traumatologia - SBOT',
-    experience: '7 anos de experiência',
-    description: 'Especialista em cirurgia da coluna vertebral'
-  },
-  { 
-    id: 13, 
-    name: 'Dr. Eduardo Ramos', 
-    specialty: 'Dermatologia',
-    phone: '(11) 98765-4333',
-    email: 'eduardo.ramos@hospitalverde.com',
-    crm: 'CRM/SP 345679',
-    certificate: 'Especialista em Dermatologia - Sociedade Brasileira de Dermatologia',
-    experience: '22 anos de experiência',
-    description: 'Especialista em dermatologia pediátrica'
-  },
-  { 
-    id: 14, 
-    name: 'Dra. Beatriz Martins', 
-    specialty: 'Pediatria',
-    phone: '(11) 98765-4334',
-    email: 'beatriz.martins@hospitalverde.com',
-    crm: 'CRM/SP 456780',
-    certificate: 'Especialista em Pediatria - Sociedade Brasileira de Pediatria',
-    experience: '6 anos de experiência',
-    description: 'Especialista em pediatria e puericultura'
-  },
-  { 
-    id: 15, 
-    name: 'Dr. Felipe Alves', 
-    specialty: 'Ginecologia',
-    phone: '(11) 98765-4335',
-    email: 'felipe.alves@hospitalverde.com',
-    crm: 'CRM/SP 567891',
-    certificate: 'Especialista em Ginecologia e Obstetrícia - FEBRASGO',
-    experience: '17 anos de experiência',
-    description: 'Especialista em reprodução humana'
-  }
-];
+// Dados persistidos via DataManager
+// Removidos arrays em memória - agora usando dataManager
 
 // Rotas da API
 
@@ -256,13 +70,10 @@ app.post('/api/register', (req, res) => {
   if (!cleanCpf || cleanCpf.length !== 11) {
     return res.status(400).json({ error: 'CPF deve conter 11 dígitos numéricos.' });
   }
-  if (users.find(u => u.email === email)) {
-    return res.status(400).json({ error: 'Usuário já cadastrado com este e-mail.' });
+  if (dataManager.userExists(email, cleanCpf)) {
+    return res.status(400).json({ error: 'Usuário já cadastrado com este e-mail ou CPF.' });
   }
-  if (users.find(u => u.cpf === cleanCpf)) {
-    return res.status(400).json({ error: 'Usuário já cadastrado com este CPF.' });
-  }
-  users.push({ name, email, password, cpf: cleanCpf });
+  dataManager.addUser({ name, email, password, cpf: cleanCpf });
   res.json({ success: true, message: 'Cadastro realizado com sucesso!' });
 });
 
@@ -300,7 +111,10 @@ app.post('/api/login', (req, res) => {
   if (!cleanCpf || cleanCpf.length !== 11) {
     return res.status(401).json({ error: 'CPF deve conter 11 dígitos numéricos.' });
   }
-  const user = users.find(u => u.email === email && u.password === password && u.cpf === cleanCpf);
+  const user = dataManager.findUser(email, cleanCpf);
+  if (user && user.password !== password) {
+    return res.status(401).json({ error: 'Credenciais inválidas. Verifique e-mail, senha e CPF.' });
+  }
   if (!user) {
     return res.status(401).json({ error: 'Credenciais inválidas. Verifique e-mail, senha e CPF.' });
   }
@@ -325,7 +139,7 @@ app.post('/api/login', (req, res) => {
  *                 $ref: '#/components/schemas/Doctor'
  */
 app.get('/api/doctors', (req, res) => {
-  res.json(doctors);
+  res.json(dataManager.getDoctors());
 });
 
 /**
@@ -353,7 +167,7 @@ app.get('/api/doctors', (req, res) => {
  *                     type: string
  */
 app.get('/api/users', (req, res) => {
-  res.json(users);
+  res.json(dataManager.getUsers());
 });
 
 /**
@@ -374,7 +188,7 @@ app.get('/api/users', (req, res) => {
  *                 $ref: '#/components/schemas/AppointmentResponse'
  */
 app.get('/api/appointments', (req, res) => {
-  res.json(appointments);
+  res.json(dataManager.getAppointments());
 });
 
 /**
@@ -411,7 +225,7 @@ app.post('/api/appointments', (req, res) => {
     return res.status(400).json({ error: 'Todos os campos do agendamento são obrigatórios.' });
   }
   // Buscar dados do médico
-  const doctor = doctors.find(d => d.id == doctorId);
+  const doctor = dataManager.findDoctor(doctorId);
   if (!doctor) {
     return res.status(400).json({ error: 'Médico não encontrado.' });
   }
@@ -447,14 +261,14 @@ app.post('/api/appointments', (req, res) => {
     return res.status(400).json({ error: 'Horário fora do funcionamento do hospital (07:00 às 18:00).' });
   }
   // 1. Conflito de horário: médico não pode ter dois agendamentos no mesmo horário
-  if (appointments.find(a => a.doctorId == doctorId && a.date === date && a.time === time)) {
+  if (dataManager.hasConflict(doctorId, date, time)) {
     return res.status(400).json({ error: 'Este médico já possui agendamento neste horário.' });
   }
   // 9. Limite diário por paciente: não pode agendar mais de uma consulta com o mesmo médico na mesma data
-  if (appointments.find(a => a.userEmail === userEmail && a.doctorId == doctorId && a.date === date)) {
+  if (dataManager.hasDailyLimit(userEmail, doctorId, date)) {
     return res.status(400).json({ error: 'Você já possui agendamento com este médico nesta data.' });
   }
-  appointments.push({
+  dataManager.addAppointment({
     userEmail,
     doctorId,
     doctorName: doctor.name,
@@ -492,7 +306,7 @@ app.post('/api/appointments', (req, res) => {
  *                 $ref: '#/components/schemas/AppointmentResponse'
  */
 app.get('/api/appointments/:userEmail', (req, res) => {
-  const userAppointments = appointments.filter(a => a.userEmail === req.params.userEmail);
+  const userAppointments = dataManager.getAppointmentsByUser(req.params.userEmail);
   res.json(userAppointments);
 });
 
@@ -533,6 +347,7 @@ app.get('/api/appointments/:userEmail', (req, res) => {
  */
 app.delete('/api/appointments/:index', (req, res) => {
   const idx = parseInt(req.params.index);
+  const appointments = dataManager.getAppointments();
   const agendamento = appointments[idx];
   if (!agendamento) {
     return res.status(404).json({ error: 'Agendamento não encontrado.' });
@@ -549,7 +364,7 @@ app.delete('/api/appointments/:index', (req, res) => {
       ? 'Cancelamento de consulta online só permitido até 1 hora antes.'
       : 'Cancelamento de consulta presencial só permitido até 24 horas antes.' });
   }
-  appointments.splice(idx, 1);
+  dataManager.removeAppointment(idx);
   res.json({ success: true, message: 'Agendamento cancelado com sucesso!' });
 });
 
