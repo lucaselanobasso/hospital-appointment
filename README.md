@@ -28,6 +28,7 @@ Sistema de agendamento de consultas médicas desenvolvido como **projeto de port
 - ✅ **Regras de antecedência** diferenciadas por tipo
 - ✅ **Testes automatizados** com Cypress
 - ✅ **API documentada** com Swagger/OpenAPI 3.0
+- ✅ **Persistência em JSON** com `DataManager` (dados sobrevivem a reinícios)
 
 ## 🏗️ Arquitetura Técnica
 
@@ -59,7 +60,7 @@ Sistema de agendamento de consultas médicas desenvolvido como **projeto de port
 - **Node.js + Express** - Servidor web (559 linhas)
 - **CORS** - Política de origem cruzada
 - **Swagger UI** - Documentação interativa
-- **JSON Storage** - Dados em memória
+- **JSON Storage** - Persistência em arquivo (`data/hospital-data.json`) via `DataManager`
 
 #### Testes & Qualidade
 - **Cypress** - Testes end-to-end
@@ -81,6 +82,12 @@ Sistema de agendamento de consultas médicas desenvolvido como **projeto de port
 - Cancelamento com validações de prazo
 - Histórico completo de consultas
 
+### 💾 Persistência de Dados
+- Implementada via `src/api/dataManager.js`
+- Arquivo: `data/hospital-data.json` é criado/atualizado automaticamente
+- Persistem: usuários, médicos e agendamentos
+- Salva a cada modificação (cadastro, agendamento, cancelamento)
+
 ## 🔧 Arquitetura Técnica
 
 ### **Frontend (SPA)**
@@ -92,7 +99,7 @@ Sistema de agendamento de consultas médicas desenvolvido como **projeto de port
 ### **Backend (API REST)**
 - **Tecnologia**: Node.js + Express
 - **Documentação**: Swagger UI completa
-- **Armazenamento**: Dados em memória (sem banco de dados)
+- **Armazenamento**: JSON persistente em `data/hospital-data.json` via `DataManager` (sem banco de dados)
 - **Validações**: Client-side e server-side
 
 ### **Testes**
@@ -211,6 +218,10 @@ npm run test:headed
 npm run test:open
 ```
 
+Observações:
+- O Cypress usa `baseUrl: http://localhost:3001` (ver `cypress.config.js`)
+- Para um estado determinístico nos testes, utilize o endpoint de reset: `POST /api/dev/reset-appointments`
+
 ## 📱 Como Usar a Aplicação
 
 ### **🔐 Primeiro Acesso**
@@ -283,6 +294,20 @@ GET  /api/doctors      # Listar médicos
 POST /api/appointments # Criar agendamento
 GET  /api/appointments/:email # Agendamentos do usuário
 DELETE /api/appointments/:id  # Cancelar agendamento
+POST /api/dev/reset-appointments # Reset de agendamentos (apenas dev/test)
+```
+
+Exemplo de requisição para `POST /api/appointments`:
+
+```json
+{
+  "userEmail": "usuario@exemplo.com",
+  "doctorId": 1,
+  "date": "2025-08-22",
+  "time": "15:00",
+  "type": "Consulta de rotina",
+  "attendance": "Presencial" // ou "Online" (retrocompatível se ausente)
+}
 ```
 
 ## 🏗️ Estrutura do Projeto
