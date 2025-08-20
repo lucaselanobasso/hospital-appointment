@@ -2,16 +2,17 @@
 .form-message {
   color: #dc3545;
   font-weight: bold;
-  font-size: 1.1em;
+  font-size: 0.875rem;
   text-align: center;
 }
 
 .form-message-success {
-  color: #198754;
+  color: #28a745;
 }
 
-/* Estilos customizados do Hospital Verde */
+/* Estilos customizados para o Hospital Verde */
 body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #fff;
 }
 
@@ -39,4 +40,35 @@ body {
 
 .text-success {
   color: #198754 !important;
+}
+
+/* Estilos para campos desabilitados */
+.disabled-fieldset {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.disabled-fieldset .form-check-input {
+  cursor: not-allowed;
+}
+
+.disabled-fieldset .form-check-label {
+  cursor: not-allowed;
+  color: #6c757d;
+}
+
+/* Animação do modal */
+.modal.fade .modal-dialog {
+  transition: transform 0.3s ease-out;
+  transform: translate(0, -50px);
+}
+
+.modal.show .modal-dialog {
+  transform: none;
+}
+
+/* Estilo para campos obrigatórios */
+.form-label::after {
+  content: " *";
+  color: #dc3545;
 }

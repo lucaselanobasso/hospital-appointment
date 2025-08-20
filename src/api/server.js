@@ -250,10 +250,18 @@ app.post('/api/appointments', (req, res) => {
   if (agendamentoDate < now) {
     return res.status(400).json({ error: 'Não é permitido agendar para datas/horários anteriores ao momento atual.' });
   }
-  // 8. Antecedência mínima de agendamento (24 horas)
+  // 8. Antecedência mínima de agendamento (24 horas presencial, 2 horas online)
   const diffMs = agendamentoDate - now;
-  if (diffMs < 24 * 60 * 60 * 1000) {
-    return res.status(400).json({ error: 'O agendamento deve ser feito com pelo menos 24 horas de antecedência.' });
+  let antecedenciaMinimaMs = 24 * 60 * 60 * 1000; // 24 horas para presencial
+  let mensagemAntecedencia = 'O agendamento presencial deve ser feito com pelo menos 24 horas de antecedência.';
+  
+  if (type && type.toLowerCase().includes('online')) {
+    antecedenciaMinimaMs = 2 * 60 * 60 * 1000; // 2 horas para online
+    mensagemAntecedencia = 'O agendamento online deve ser feito com pelo menos 2 horas de antecedência.';
+  }
+  
+  if (diffMs < antecedenciaMinimaMs) {
+    return res.status(400).json({ error: mensagemAntecedencia });
   }
   // 7. Horário de funcionamento do hospital (07:00 às 18:00)
   const hora = parseInt(time.split(':')[0], 10);

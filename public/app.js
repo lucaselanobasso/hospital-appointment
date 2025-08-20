@@ -276,50 +276,92 @@ function renderAgendar() {
         'Vacinação'
       ];
       appDiv.innerHTML = `
-        <div class='card mx-auto' style='max-width:500px;'>
+        <div class='card mx-auto' style='max-width:600px;'>
           <div class='card-body'>
             <h2 class='text-success text-center'>Agendar Consulta</h2>
             <form id='agendarForm'>
+              <!-- Forma de Atendimento - RADIO -->
               <div class='mb-3'>
-                <label class='form-label'>Forma de Atendimento</label>
-                <select class='form-select' id='formaAtendimento'>
-                  <option value=''>Selecione</option>
-                  <option value='Presencial'>Presencial</option>
-                  <option value='Online'>Online</option>
+                <label class='form-label'>1. Forma de Atendimento</label>
+                <div id='formaAtendimentoGroup'>
+                  <div class='form-check'>
+                    <input class='form-check-input' type='radio' name='formaAtendimento' id='formaPresencial' value='Presencial'>
+                    <label class='form-check-label' for='formaPresencial'>Presencial</label>
+                  </div>
+                  <div class='form-check'>
+                    <input class='form-check-input' type='radio' name='formaAtendimento' id='formaOnline' value='Online'>
+                    <label class='form-check-label' for='formaOnline'>Online (Telemedicina)</label>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Tipo de Serviço - RADIO -->
+              <div class='mb-3'>
+                <label class='form-label'>2. Tipo de Serviço</label>
+                <div id='tipoServicoGroup' class='disabled-fieldset'>
+                  <!-- Será preenchido dinamicamente -->
+                </div>
+              </div>
+              
+              <!-- Especialidade - RADIO -->
+              <div class='mb-3'>
+                <label class='form-label'>3. Especialidade</label>
+                <div id='especialidadeGroup' class='disabled-fieldset'>
+                  <!-- Será preenchido dinamicamente -->
+                </div>
+              </div>
+              
+              <!-- Médico - DROPDOWN -->
+              <div class='mb-3'>
+                <label class='form-label'>4. Médico</label>
+                <select class='form-select' id='medico' disabled>
+                  <option value=''>Selecione uma especialidade primeiro</option>
                 </select>
               </div>
+              
+              <!-- Data - DD/MM/AAAA -->
               <div class='mb-3'>
-                <label class='form-label'>Tipo de Serviço</label>
-                <select class='form-select' id='tipoConsulta' disabled></select>
+                <label class='form-label'>5. Data (DD/MM/AAAA)</label>
+                <input type='text' class='form-control' id='data' placeholder='DD/MM/AAAA' maxlength='10' disabled>
               </div>
+              
+              <!-- Horário - RADIO -->
               <div class='mb-3'>
-                <label class='form-label'>Especialidade</label>
-                <select class='form-select' id='especialidade' disabled></select>
+                <label class='form-label'>6. Horário</label>
+                <div id='horarioGroup' class='disabled-fieldset'>
+                  <!-- Será preenchido dinamicamente -->
+                </div>
               </div>
-              <div class='mb-3'>
-                <label class='form-label'>Médico</label>
-                <select class='form-select' id='medico' disabled></select>
-              </div>
-              <div class='mb-3'>
-                <label class='form-label'>Data</label>
-                <input type='date' class='form-control' id='data' disabled>
-              </div>
-              <div class='mb-3'>
-                <label class='form-label'>Horário</label>
-                <select class='form-select' id='horario' disabled></select>
-              </div>
-              <button type='button' class='btn btn-success w-100' id='btnResumoAgendamento'>Resumo</button>
-              <button type='submit' class='btn btn-primary w-100 mt-2' id='btnConfirmarAgendamento' style='display:none;'>Confirmar</button>
+              
+              <button type='button' class='btn btn-success w-100' id='btnResumoAgendamento' disabled>Ver Resumo</button>
             </form>
             <div id='agendar-message' class='mt-2 form-message'></div>
-            <div id='agendar-resumo' class='mt-3'></div>
+          </div>
+        </div>
+        
+        <!-- Modal de Resumo -->
+        <div class='modal fade' id='resumoModal' tabindex='-1' aria-labelledby='resumoModalLabel' aria-hidden='true'>
+          <div class='modal-dialog modal-lg'>
+            <div class='modal-content'>
+              <div class='modal-header bg-success text-white'>
+                <h5 class='modal-title' id='resumoModalLabel'>Resumo do Agendamento</h5>
+                <button type='button' class='btn-close btn-close-white' data-bs-dismiss='modal' aria-label='Fechar'></button>
+              </div>
+              <div class='modal-body' id='resumoContent'>
+                <!-- Conteúdo do resumo será inserido aqui -->
+              </div>
+              <div class='modal-footer'>
+                <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Voltar para Editar</button>
+                <button type='button' class='btn btn-success' id='btnConfirmarAgendamento'>Confirmar Agendamento</button>
+              </div>
+            </div>
           </div>
         </div>
       `;
-      // Especialidade -> Médico
-      const especialidadeSelect = document.getElementById('especialidade');
+      // Elementos do formulário
       const medicoSelect = document.getElementById('medico');
-      const horarioSelect = document.getElementById('horario');
+      const dataInput = document.getElementById('data');
+      const btnResumo = document.getElementById('btnResumoAgendamento');
 
       // Serviços compatíveis por especialidade e forma de atendimento
       const servicosPorEspecialidade = {
@@ -345,231 +387,399 @@ function renderAgendar() {
         }
       };
 
-      // Cascata de liberação de campos
-      const formaAtendimento = document.getElementById('formaAtendimento');
-      formaAtendimento.onchange = function() {
-        tipoConsulta.innerHTML = '<option value="">Selecione</option>';
-        tipoConsulta.disabled = true;
-        especialidadeSelect.innerHTML = '<option value="">Selecione</option>';
-        especialidadeSelect.disabled = true;
-        medicoSelect.innerHTML = '';
-        medicoSelect.disabled = true;
-        horarioSelect.innerHTML = '';
-        horarioSelect.disabled = true;
-  const dataInput = document.getElementById('data');
-  dataInput.value = '';
-  dataInput.disabled = false;
-  // Definir mínimo para hoje
-  const hoje = new Date();
-  const yyyy = hoje.getFullYear();
-  const mm = String(hoje.getMonth() + 1).padStart(2, '0');
-  const dd = String(hoje.getDate()).padStart(2, '0');
-  dataInput.setAttribute('min', `${yyyy}-${mm}-${dd}`);
-        if (formaAtendimento.value) {
-          // Preencher tipos de serviço disponíveis para a forma selecionada
-          let tiposDisponiveis = [];
-          especialidades.forEach(e => {
-            const servicos = servicosPorEspecialidade[e][formaAtendimento.value] || [];
-            servicos.forEach(s => {
-              if (!tiposDisponiveis.includes(s)) tiposDisponiveis.push(s);
-            });
-          });
-          tipoConsulta.innerHTML = '<option value="">Selecione</option>' + tiposDisponiveis.map(t => `<option value='${t}'>${t}</option>`).join('');
-          tipoConsulta.disabled = false;
-        }
-      };
+      // Variáveis para armazenar seleções
+      let selectedFormaAtendimento = '';
+      let selectedTipoServico = '';
+      let selectedEspecialidade = '';
+      let selectedMedico = '';
+      let selectedData = '';
+      let selectedHorario = '';
 
-      tipoConsulta.onchange = function() {
-        especialidadeSelect.innerHTML = '<option value="">Selecione</option>';
-        especialidadeSelect.disabled = true;
-        medicoSelect.innerHTML = '';
-        medicoSelect.disabled = true;
-        horarioSelect.innerHTML = '';
-        horarioSelect.disabled = true;
-        document.getElementById('data').value = '';
-        document.getElementById('data').disabled = false;
-        if (tipoConsulta.value && formaAtendimento.value) {
-          // Preencher especialidades compatíveis com o tipo de serviço e forma de atendimento
-          const especialidadesCompativeis = especialidades.filter(e => {
-            const servicos = servicosPorEspecialidade[e][formaAtendimento.value] || [];
-            return servicos.includes(tipoConsulta.value);
-          });
-          especialidadeSelect.innerHTML = '<option value="">Selecione</option>' + especialidadesCompativeis.map(e => `<option value='${e}'>${e}</option>`).join('');
-          especialidadeSelect.disabled = false;
-        }
-      };
+      // Função para limpar mensagens de erro
+      function clearMessage() {
+        const msgDiv = document.getElementById('agendar-message');
+        msgDiv.textContent = '';
+        msgDiv.className = 'mt-2 form-message';
+      }
 
-      especialidadeSelect.onchange = function() {
-        medicoSelect.innerHTML = '';
-        medicoSelect.disabled = true;
-        horarioSelect.innerHTML = '';
-        horarioSelect.disabled = true;
-        document.getElementById('data').value = '';
-        document.getElementById('data').disabled = false;
-        if (especialidadeSelect.value && tipoConsulta.value && formaAtendimento.value) {
-          // Filtrar médicos por especialidade
-          const medicos = doctors.filter(d => d.specialty === especialidadeSelect.value);
-          if (medicos.length > 0) {
-            medicoSelect.innerHTML = `<option value=''>Selecione</option>` + medicos.map(m => `<option value='${m.id}'>${m.name}</option>`).join('');
-            medicoSelect.disabled = false;
+      // Função para mostrar erro
+      function showError(message) {
+        const msgDiv = document.getElementById('agendar-message');
+        msgDiv.textContent = message;
+        msgDiv.className = 'mt-2 form-message';
+      }
+
+      // Função para habilitar/desabilitar grupos de campos
+      function enableFieldset(groupId, enable = true) {
+        const group = document.getElementById(groupId);
+        if (enable) {
+          group.classList.remove('disabled-fieldset');
+        } else {
+          group.classList.add('disabled-fieldset');
+        }
+      }
+
+      // Função para formatar data DD/MM/AAAA
+      function formatDate(input) {
+        let value = input.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+          value = value.substring(0, 2) + '/' + value.substring(2);
+        }
+        if (value.length >= 5) {
+          value = value.substring(0, 5) + '/' + value.substring(5, 9);
+        }
+        input.value = value;
+      }
+
+      // Função para validar data
+      function isValidDate(dateString) {
+        const parts = dateString.split('/');
+        if (parts.length !== 3) return false;
+        
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const year = parseInt(parts[2], 10);
+        
+        if (day < 1 || day > 31 || month < 1 || month > 12 || year < 2024) return false;
+        
+        const date = new Date(year, month - 1, day);
+        return date.getDate() === day && date.getMonth() === month - 1 && date.getFullYear() === year;
+      }
+
+      // 1. Forma de Atendimento - RADIO
+      document.querySelectorAll('input[name="formaAtendimento"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+          if (this.checked) {
+            clearMessage();
+            selectedFormaAtendimento = this.value;
             
-            // Check if there's a pre-selected doctor from "Nossos Doutores" page
-            const selectedDoctorId = sessionStorage.getItem('selectedDoctorId');
-            if (selectedDoctorId && medicos.find(m => m.id == selectedDoctorId)) {
-              medicoSelect.value = selectedDoctorId;
-              sessionStorage.removeItem('selectedDoctorId'); // Clear after use
-            }
+            // Resetar campos seguintes
+            selectedTipoServico = '';
+            selectedEspecialidade = '';
+            selectedMedico = '';
+            selectedData = '';
+            selectedHorario = '';
+            
+            // Habilitar próximo campo
+            enableFieldset('tipoServicoGroup', true);
+            
+            // Desabilitar campos seguintes
+            enableFieldset('especialidadeGroup', false);
+            medicoSelect.disabled = true;
+            medicoSelect.innerHTML = '<option value="">Selecione uma especialidade primeiro</option>';
+            dataInput.disabled = true;
+            dataInput.value = '';
+            enableFieldset('horarioGroup', false);
+            btnResumo.disabled = true;
+            
+            // Preencher tipos de serviço disponíveis
+            let tiposDisponiveis = [];
+            especialidades.forEach(e => {
+              const servicos = servicosPorEspecialidade[e][this.value] || [];
+              servicos.forEach(s => {
+                if (!tiposDisponiveis.includes(s)) tiposDisponiveis.push(s);
+              });
+            });
+            
+            const tipoGroup = document.getElementById('tipoServicoGroup');
+            tipoGroup.innerHTML = tiposDisponiveis.map(tipo => `
+              <div class='form-check'>
+                <input class='form-check-input' type='radio' name='tipoServico' id='tipo${tipo.replace(/\s+/g, '')}' value='${tipo}'>
+                <label class='form-check-label' for='tipo${tipo.replace(/\s+/g, '')}'>${tipo}</label>
+              </div>
+            `).join('');
+            
+            // Adicionar listeners aos novos radio buttons
+            document.querySelectorAll('input[name="tipoServico"]').forEach(radio => {
+              radio.addEventListener('change', handleTipoServicoChange);
+            });
+          }
+        });
+      });
+
+      // 2. Tipo de Serviço - RADIO
+      function handleTipoServicoChange() {
+        if (this.checked) {
+          clearMessage();
+          selectedTipoServico = this.value;
+          
+          // Resetar campos seguintes
+          selectedEspecialidade = '';
+          selectedMedico = '';
+          selectedData = '';
+          selectedHorario = '';
+          
+          // Habilitar próximo campo
+          enableFieldset('especialidadeGroup', true);
+          
+          // Desabilitar campos seguintes
+          medicoSelect.disabled = true;
+          medicoSelect.innerHTML = '<option value="">Selecione uma especialidade primeiro</option>';
+          dataInput.disabled = true;
+          dataInput.value = '';
+          enableFieldset('horarioGroup', false);
+          btnResumo.disabled = true;
+          
+          // Preencher especialidades compatíveis
+          const especialidadesCompativeis = especialidades.filter(e => {
+            const servicos = servicosPorEspecialidade[e][selectedFormaAtendimento] || [];
+            return servicos.includes(selectedTipoServico);
+          });
+          
+          const especialidadeGroup = document.getElementById('especialidadeGroup');
+          especialidadeGroup.innerHTML = especialidadesCompativeis.map(esp => `
+            <div class='form-check'>
+              <input class='form-check-input' type='radio' name='especialidade' id='esp${esp.replace(/\s+/g, '')}' value='${esp}'>
+              <label class='form-check-label' for='esp${esp.replace(/\s+/g, '')}'>${esp}</label>
+            </div>
+          `).join('');
+          
+          // Adicionar listeners aos novos radio buttons
+          document.querySelectorAll('input[name="especialidade"]').forEach(radio => {
+            radio.addEventListener('change', handleEspecialidadeChange);
+          });
+        }
+      }
+
+      // 3. Especialidade - RADIO
+      function handleEspecialidadeChange() {
+        if (this.checked) {
+          clearMessage();
+          selectedEspecialidade = this.value;
+          
+          // Resetar campos seguintes
+          selectedMedico = '';
+          selectedData = '';
+          selectedHorario = '';
+          
+          // Habilitar próximo campo
+          medicoSelect.disabled = false;
+          
+          // Desabilitar campos seguintes
+          dataInput.disabled = true;
+          dataInput.value = '';
+          enableFieldset('horarioGroup', false);
+          btnResumo.disabled = true;
+          
+          // Preencher médicos da especialidade
+          const medicos = doctors.filter(d => d.specialty === selectedEspecialidade);
+          medicoSelect.innerHTML = '<option value="">Selecione um médico</option>' + 
+            medicos.map(m => `<option value='${m.id}'>${m.name}</option>`).join('');
+          
+          // Check if there's a pre-selected doctor from "Nossos Doutores" page
+          const selectedDoctorId = sessionStorage.getItem('selectedDoctorId');
+          if (selectedDoctorId && medicos.find(m => m.id == selectedDoctorId)) {
+            medicoSelect.value = selectedDoctorId;
+            selectedMedico = selectedDoctorId;
+            sessionStorage.removeItem('selectedDoctorId');
+            // Trigger next step
+            handleMedicoChange();
           }
         }
-      };
+      }
 
-      medicoSelect.onchange = function() {
-        horarioSelect.innerHTML = '';
-        horarioSelect.disabled = true;
-        document.getElementById('data').value = '';
-        document.getElementById('data').disabled = false;
-        // Definir mínimo para hoje
-        const dataInput = document.getElementById('data');
-        const hoje = new Date();
-        const yyyy = hoje.getFullYear();
-        const mm = String(hoje.getMonth() + 1).padStart(2, '0');
-        const dd = String(hoje.getDate()).padStart(2, '0');
-        dataInput.setAttribute('min', `${yyyy}-${mm}-${dd}`);
-      };
+      // 4. Médico - DROPDOWN
+      medicoSelect.addEventListener('change', handleMedicoChange);
+      
+      function handleMedicoChange() {
+        if (medicoSelect.value) {
+          clearMessage();
+          selectedMedico = medicoSelect.value;
+          
+          // Resetar campos seguintes
+          selectedData = '';
+          selectedHorario = '';
+          
+          // Habilitar próximo campo
+          dataInput.disabled = false;
+          
+          // Desabilitar campos seguintes
+          enableFieldset('horarioGroup', false);
+          btnResumo.disabled = true;
+        }
+      }
 
-      document.getElementById('data').onchange = function() {
-        horarioSelect.innerHTML = '';
-        horarioSelect.disabled = true;
-        const dataSelecionada = this.value;
-        if (!dataSelecionada) return;
-        const hoje = new Date();
-        const dataEscolhida = new Date(dataSelecionada + 'T00:00');
-        const agora = new Date();
-        if (dataEscolhida < new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate())) {
-          const msgDiv = document.getElementById('agendar-message');
-          msgDiv.textContent = 'Não é permitido agendar para datas anteriores ao dia de hoje.';
-          msgDiv.className = 'mt-2 form-message';
-          return;
+      // 5. Data - DD/MM/AAAA com formatação automática
+      dataInput.addEventListener('input', function() {
+        formatDate(this);
+      });
+
+      dataInput.addEventListener('blur', function() {
+        if (this.value.length === 10) {
+          if (isValidDate(this.value)) {
+            clearMessage();
+            selectedData = this.value;
+            
+            // Converter para formato ISO para validação
+            const parts = this.value.split('/');
+            const isoDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+            
+            // Validar antecedência
+            const hoje = new Date();
+            const dataEscolhida = new Date(isoDate + 'T00:00');
+            
+            if (dataEscolhida < new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate())) {
+              showError('Não é permitido agendar para datas anteriores ao dia de hoje.');
+              return;
+            }
+            
+            // Resetar horário
+            selectedHorario = '';
+            btnResumo.disabled = true;
+            
+            // Carregar horários disponíveis
+            loadAvailableHours(isoDate);
+          } else {
+            showError('Data inválida. Use o formato DD/MM/AAAA.');
+          }
         }
-        // Antecedência mínima depende da forma de atendimento
-        let antecedenciaMinimaMs = 24 * 60 * 60 * 1000;
-        if (formaAtendimento.value === 'Online') {
-          antecedenciaMinimaMs = 2 * 60 * 60 * 1000;
-        }
-  // Não bloquear a data, pois a antecedência será validada por horário
-  const msgDiv = document.getElementById('agendar-message');
-  msgDiv.textContent = '';
-        // Horários disponíveis do médico
+      });
+
+      // Função para carregar horários disponíveis
+      function loadAvailableHours(isoDate) {
         const horariosPadrao = ['08:00', '09:00', '10:00', '14:00', '15:00', '16:00'];
+        
         fetch(`${API_BASE_URL}/appointments`)
           .then(res => res.json())
           .then(agendamentos => {
-            const ocupados = agendamentos.filter(a => a.doctorId == medicoSelect.value && a.date === dataSelecionada).map(a => a.time);
-            // Bloquear agendamento duplicado para o mesmo usuário
-            const meusAgendamentos = agendamentos.filter(a => a.userEmail === currentUser.email && a.date === dataSelecionada);
+            const ocupados = agendamentos.filter(a => a.doctorId == selectedMedico && a.date === isoDate).map(a => a.time);
+            const meusAgendamentos = agendamentos.filter(a => a.userEmail === currentUser.email && a.date === isoDate);
             const now = new Date();
-            let antecedenciaHorarioMs = 24 * 60 * 60 * 1000;
-            if (formaAtendimento.value === 'Online') {
-              antecedenciaHorarioMs = 2 * 60 * 60 * 1000;
+            
+            let antecedenciaHorarioMs = 24 * 60 * 60 * 1000; // 24 horas para presencial
+            if (selectedFormaAtendimento === 'Online') {
+              antecedenciaHorarioMs = 2 * 60 * 60 * 1000; // 2 horas para online
             }
+            
             const horariosDisponiveis = horariosPadrao.filter(h => {
               const hora = parseInt(h.split(':')[0], 10);
               if (hora < 7 || hora > 18) return false;
-              const agendamentoDate = new Date(dataSelecionada + 'T' + h);
+              
+              const agendamentoDate = new Date(isoDate + 'T' + h);
               if (agendamentoDate < now) return false;
               if (ocupados.includes(h)) return false;
               if (meusAgendamentos.find(a => a.time === h)) return false;
-              // Antecedência mínima por tipo: considerar data e hora do agendamento
-              // Permitir horários do dia seguinte se respeitar antecedência mínima
+              
+              // Verificar antecedência mínima
               if ((agendamentoDate.getTime() - now.getTime()) < antecedenciaHorarioMs) return false;
               return true;
             });
-            horarioSelect.innerHTML = `<option value=''>Selecione</option>` + horariosDisponiveis.map(h => `<option value='${h}'>${h}</option>`).join('');
-            horarioSelect.disabled = false;
+            
             if (horariosDisponiveis.length === 0) {
-              const msgDiv = document.getElementById('agendar-message');
-              msgDiv.textContent = formaAtendimento.value === 'Online'
+              showError(selectedFormaAtendimento === 'Online'
                 ? 'Não há horários disponíveis para agendamento online com a antecedência mínima de 2 horas.'
-                : 'Não há horários disponíveis para agendamento presencial com a antecedência mínima de 24 horas.';
-              msgDiv.className = 'mt-2 form-message';
+                : 'Não há horários disponíveis para agendamento presencial com a antecedência mínima de 24 horas.');
+              return;
             }
+            
+            // Habilitar campo de horário
+            enableFieldset('horarioGroup', true);
+            
+            const horarioGroup = document.getElementById('horarioGroup');
+            horarioGroup.innerHTML = horariosDisponiveis.map(horario => `
+              <div class='form-check'>
+                <input class='form-check-input' type='radio' name='horario' id='hora${horario.replace(':', '')}' value='${horario}'>
+                <label class='form-check-label' for='hora${horario.replace(':', '')}'>${horario}</label>
+              </div>
+            `).join('');
+            
+            // Adicionar listeners aos novos radio buttons
+            document.querySelectorAll('input[name="horario"]').forEach(radio => {
+              radio.addEventListener('change', function() {
+                if (this.checked) {
+                  clearMessage();
+                  selectedHorario = this.value;
+                  btnResumo.disabled = false;
+                }
+              });
+            });
+          })
+          .catch(() => {
+            showError('Erro ao carregar horários disponíveis.');
           });
-      };
-      // Resumo antes da confirmação
-      document.getElementById('btnResumoAgendamento').onclick = function() {
-        const tipo = document.getElementById('tipoConsulta').value;
-        const especialidade = document.getElementById('especialidade').value;
-        const medicoId = document.getElementById('medico').value;
-        const data = document.getElementById('data').value;
-        const horario = document.getElementById('horario').value;
-        const msgDiv = document.getElementById('agendar-message');
-        msgDiv.textContent = '';
-        msgDiv.className = 'mt-2 form-message';
-        if (!tipo || !especialidade || !medicoId || !data || !horario) {
-          msgDiv.textContent = 'Todos os campos são obrigatórios para visualizar o resumo.';
+      }
+
+      // Resumo e confirmação
+      btnResumo.addEventListener('click', function() {
+        if (!selectedFormaAtendimento || !selectedTipoServico || !selectedEspecialidade || !selectedMedico || !selectedData || !selectedHorario) {
+          showError('Todos os campos são obrigatórios para visualizar o resumo.');
           return;
         }
+        
         // Buscar nome do médico
-        const medicoObj = doctors.find(d => d.id == medicoId);
+        const medicoObj = doctors.find(d => d.id == selectedMedico);
         const medicoNome = medicoObj ? medicoObj.name : '';
-        // Montar resumo
-        const resumoDiv = document.getElementById('agendar-resumo');
-        resumoDiv.innerHTML = `
-          <div class='alert alert-info'>
-            <strong>Resumo do Agendamento:</strong><br>
-            <strong>Forma de Atendimento:</strong> ${formaAtendimento.value}<br>
-            <strong>Tipo de Serviço:</strong> ${tipo}<br>
-            <strong>Especialidade:</strong> ${especialidade}<br>
-            <strong>Médico:</strong> ${medicoNome}<br>
-            <strong>Data:</strong> ${data}<br>
-            <strong>Horário:</strong> ${horario}<br>
+        
+        // Preencher conteúdo do modal
+        document.getElementById('resumoContent').innerHTML = `
+          <div class='row'>
+            <div class='col-md-6'>
+              <p><strong>Forma de Atendimento:</strong><br>${selectedFormaAtendimento}</p>
+              <p><strong>Tipo de Serviço:</strong><br>${selectedTipoServico}</p>
+              <p><strong>Especialidade:</strong><br>${selectedEspecialidade}</p>
+            </div>
+            <div class='col-md-6'>
+              <p><strong>Médico:</strong><br>${medicoNome}</p>
+              <p><strong>Data:</strong><br>${selectedData}</p>
+              <p><strong>Horário:</strong><br>${selectedHorario}</p>
+            </div>
+          </div>
+          <div class='alert alert-info mt-3'>
+            <strong>Importante:</strong> Após confirmar, você será redirecionado para "Meus Agendamentos" onde poderá visualizar e gerenciar suas consultas.
           </div>
         `;
-        document.getElementById('btnConfirmarAgendamento').style.display = '';
-      };
-
-      document.getElementById('agendarForm').onsubmit = async function(e) {
-        e.preventDefault();
-        const tipo = document.getElementById('tipoConsulta').value;
-        const especialidade = document.getElementById('especialidade').value;
-        const medicoId = document.getElementById('medico').value;
-        const data = document.getElementById('data').value;
-        const horario = document.getElementById('horario').value;
-        const msgDiv = document.getElementById('agendar-message');
-        msgDiv.textContent = '';
-        msgDiv.className = 'mt-2 form-message';
-        if (!tipo || !especialidade || !medicoId || !data || !horario) {
-          msgDiv.textContent = 'Todos os campos são obrigatórios';
-          return;
-        }
+        
+        // Mostrar modal com animação
+        const modal = new bootstrap.Modal(document.getElementById('resumoModal'));
+        modal.show();
+      });
+      
+      // Confirmação do agendamento
+      document.getElementById('btnConfirmarAgendamento').addEventListener('click', async function() {
         try {
+          // Converter data para formato ISO
+          const parts = selectedData.split('/');
+          const isoDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+          
           const res = await fetch(`${API_BASE_URL}/appointments`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userEmail: currentUser.email, doctorId: medicoId, date: data, time: horario, type: tipo })
+            body: JSON.stringify({ 
+              userEmail: currentUser.email, 
+              doctorId: selectedMedico, 
+              date: isoDate, 
+              time: selectedHorario, 
+              type: selectedTipoServico 
+            })
           });
+          
           const result = await res.json();
+          
           if (result.success) {
+            // Fechar modal
+            bootstrap.Modal.getInstance(document.getElementById('resumoModal')).hide();
+            
+            // Mostrar mensagem de sucesso
+            const msgDiv = document.getElementById('agendar-message');
             msgDiv.textContent = result.message || 'Agendamento realizado com sucesso!';
             msgDiv.className = 'mt-2 form-message form-message-success';
-            document.getElementById('agendar-resumo').innerHTML = '';
-            setTimeout(() => { location.hash = 'meus-agendamentos'; }, 1000);
+            
+            // Redirecionar após 2 segundos
+            setTimeout(() => { 
+              location.hash = 'meus-agendamentos'; 
+            }, 2000);
           } else {
-            msgDiv.textContent = result.error || 'Erro ao agendar.';
+            // Fechar modal e mostrar erro
+            bootstrap.Modal.getInstance(document.getElementById('resumoModal')).hide();
+            showError(result.error || 'Erro ao agendar consulta.');
           }
-        } catch {
-          msgDiv.textContent = 'Erro de conexão.';
+        } catch (error) {
+          bootstrap.Modal.getInstance(document.getElementById('resumoModal')).hide();
+          showError('Erro de conexão ao confirmar agendamento.');
         }
-      };
+      });
     });
 
-// Função para exibir mensagens estilizadas
-function showMessage(elementId, msg, success = true) {
-  const el = document.getElementById(elementId);
-  if (!el) return;
-  el.textContent = msg;
-  el.className = 'mt-2 form-message';
-}
 }
 
 // Renderização da página Meus Agendamentos
