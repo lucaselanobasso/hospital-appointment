@@ -16,9 +16,7 @@
 
 ## 📋 Sobre o Projeto
 
-Sistema de agendamento de consultas médicas desenvolvido como **projeto de portfólio profissional**, implementando regras de negócio hospitalares complexas, validações em tempo real e cobertura completa de testes automatizados.
-
-**Contexto**: Projeto desenvolvido durante a **Mentoria de Testes de Software 2.0** do **Julio de Lima**, focando em qualidade de software, testes automatizados e boas práticas de desenvolvimento.
+Aplicação desenvolvida para o **Projeto de Portfólio Pessoal**, no contexto da **Mentoria 2.0 em Testes de Software** com **Julio de Lima**. O foco é qualidade de software, testes automatizados (Cypress) e boas práticas de desenvolvimento, aplicadas a um sistema realista de agendamento hospitalar.
 
 ### 🎯 Principais Características
 
@@ -37,7 +35,7 @@ Sistema de agendamento de consultas médicas desenvolvido como **projeto de port
 │   Frontend SPA  │◄──►│   Backend API   │◄──►│  Dados Memória  │
 │  (Vanilla JS)   │    │   (Express.js)  │    │   (JSON Store)  │
 │   Bootstrap 5   │    │   Swagger UI    │    │   15 Médicos    │
-│     834 linhas  │    │   559 linhas    │    │   3 Usuários    │
+│     834 linhas  │    │   559 linhas    │    │   1 Usuário     │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          ▲                       ▲
          │                       │
@@ -259,19 +257,12 @@ Observações:
 
 ## 🧪 Dados de Teste
 
-### **Usuários Pré-cadastrados**
+### **Usuário Pré-cadastrado**
 ```
-Email: lucasbasso@gmail.com
-CPF: 00100200304
-Senha: 123456
-
-Email: juliodelima@gmail.com  
+Name: Joao Pedro
+Email: joaopedro@gmail.com
 CPF: 10020030040
-Senha: 123456
-
-Email: carlosandrada@gmail.com
-CPF: 11122233344
-Senha: 123456
+Senha: joao12131senha
 ```
 
 ### **Especialidades Disponíveis**

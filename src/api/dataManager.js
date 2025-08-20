@@ -12,15 +12,9 @@ class DataManager {
     return {
       users: [
         {
-          name: 'Joao Silva',
-          email: 'joaosilva@gmail.com',
-          password: '123456',
-          cpf: '12345678911'
-        },
-        {
-          name: 'Julio de Lima',
-          email: 'juliodelima@gmail.com',
-          password: '123456',
+          name: 'Joao Pedro',
+          email: 'joaopedro@gmail.com',
+          password: 'joao12131senha',
           cpf: '10020030040'
         }
       ],
