@@ -7,17 +7,8 @@ class DataManager {
     this.data = this.loadData();
   }
 
-  loadData() {
-    try {
-      if (fs.existsSync(this.dataFile)) {
-        const fileData = fs.readFileSync(this.dataFile, 'utf8');
-        return JSON.parse(fileData);
-      }
-    } catch (error) {
-      console.log('Erro ao carregar dados:', error);
-    }
-
-    // Dados iniciais padrão
+  // Retorna o conjunto de dados padrão (sem persistência)
+  getDefaultData() {
     return {
       users: [
         {
@@ -204,6 +195,20 @@ class DataManager {
     };
   }
 
+  loadData() {
+    try {
+      if (fs.existsSync(this.dataFile)) {
+        const fileData = fs.readFileSync(this.dataFile, 'utf8');
+        return JSON.parse(fileData);
+      }
+    } catch (error) {
+      console.log('Erro ao carregar dados:', error);
+    }
+
+    // Dados iniciais padrão
+    return this.getDefaultData();
+  }
+
   saveData() {
     try {
       // Criar diretório se não existir
@@ -269,6 +274,13 @@ class DataManager {
       return true;
     }
     return false;
+  }
+
+  // Limpar todos os agendamentos (uso em testes/dev)
+  clearAppointments() {
+    this.data.appointments = [];
+    this.saveData();
+    return true;
   }
 
   hasConflict(doctorId, date, time) {

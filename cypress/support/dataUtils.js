@@ -25,9 +25,46 @@ const dataOntem = () => {
     return data.toISOString().split('T')[0];
 };
 
+// Função para obter data por extenso no formato DD/MM/AAAA as HH:MM, somando dias e horas
+const dataPorExtenso = (dias = 0, horas = 0) => {
+    const data = new Date();
+    data.setDate(data.getDate() + Number(dias));
+    data.setHours(data.getHours() + Number(horas));
+
+    const dd = String(data.getDate()).padStart(2, '0');
+    const mm = String(data.getMonth() + 1).padStart(2, '0');
+    const yyyy = data.getFullYear();
+    const hh = String(data.getHours()).padStart(2, '0');
+    const min = String(data.getMinutes()).padStart(2, '0');
+
+    return `${dd}/${mm}/${yyyy} as ${hh}:${min}`;
+};
+
+// Novo: apenas data no formato DD/MM/AAAA, somando dias
+const dataDDMMYYYY = (dias = 0) => {
+    const data = new Date();
+    data.setDate(data.getDate() + Number(dias));
+    const dd = String(data.getDate()).padStart(2, '0');
+    const mm = String(data.getMonth() + 1).padStart(2, '0');
+    const yyyy = data.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
+};
+
+// Novo: apenas hora no formato HH:MM, somando horas
+const horaHHMM = (horas = 0) => {
+    const data = new Date();
+    data.setHours(data.getHours() + Number(horas));
+    const hh = String(data.getHours()).padStart(2, '0');
+    const min = String(data.getMinutes()).padStart(2, '0');
+    return `${hh}:${min}`;
+};
+
 module.exports = {
     dataFutura,
     dataComHoras,
     dataAtual,
-    dataOntem
+    dataOntem,
+    dataPorExtenso,
+    dataDDMMYYYY,
+    horaHHMM
 }

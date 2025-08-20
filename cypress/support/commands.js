@@ -32,3 +32,6 @@ import './commands/cadastro'
 
 //Importando comandos de login
 import './commands/login'
+
+//Importando comandos de agendamento
+import './commands/agendamento'

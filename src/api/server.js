@@ -219,7 +219,7 @@ app.get('/api/appointments', (req, res) => {
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 app.post('/api/appointments', (req, res) => {
-  const { userEmail, doctorId, date, time, type } = req.body;
+  const { userEmail, doctorId, date, time, type, attendance } = req.body;
   // 4. Validação de campos obrigatórios
   if (!userEmail || !doctorId || !date || !time || !type) {
     return res.status(400).json({ error: 'Todos os campos do agendamento são obrigatórios.' });
@@ -233,16 +233,35 @@ app.post('/api/appointments', (req, res) => {
   if (doctor.specialty !== req.body.specialty && req.body.specialty) {
     return res.status(400).json({ error: 'Médico não atende a especialidade selecionada.' });
   }
-  // 6. Serviços compatíveis com a especialidade (exemplo: só Cardiologia faz "Exame")
-  const servicosPorEspecialidade = {
-    'Cardiologia': ['Presencial', 'Exame', 'Consulta de rotina', 'Retorno'],
-    'Ortopedia': ['Presencial', 'Consulta de rotina', 'Retorno'],
-    'Dermatologia': ['Presencial', 'Consulta de rotina', 'Retorno'],
-    'Pediatria': ['Presencial', 'Consulta de rotina', 'Retorno'],
-    'Ginecologia': ['Presencial', 'Consulta de rotina', 'Retorno', 'Exame']
+  // 6. Serviços compatíveis com a especialidade e forma de atendimento (compatível com o frontend)
+  // Mantém retrocompatibilidade: se attendance não vier, validação é permissiva.
+  const servicosFE = {
+    'Cardiologia': {
+      'Presencial': ['Exame', 'Consulta de rotina', 'Retorno'],
+      'Online': ['Consulta de rotina', 'Retorno']
+    },
+    'Ortopedia': {
+      'Presencial': ['Consulta de rotina', 'Retorno'],
+      'Online': ['Consulta de rotina']
+    },
+    'Dermatologia': {
+      'Presencial': ['Consulta de rotina', 'Retorno'],
+      'Online': ['Consulta de rotina']
+    },
+    'Pediatria': {
+      'Presencial': ['Consulta de rotina', 'Retorno'],
+      'Online': ['Consulta de rotina']
+    },
+    'Ginecologia': {
+      'Presencial': ['Exame', 'Consulta de rotina', 'Retorno'],
+      'Online': ['Consulta de rotina']
+    }
   };
-  if (servicosPorEspecialidade[doctor.specialty] && !servicosPorEspecialidade[doctor.specialty].includes(type)) {
-    return res.status(400).json({ error: 'Serviço não disponível para esta especialidade.' });
+  if (attendance && servicosFE[doctor.specialty]) {
+    const disponiveis = servicosFE[doctor.specialty][attendance] || [];
+    if (!disponiveis.includes(type)) {
+      return res.status(400).json({ error: 'Serviço não disponível para esta especialidade/forma de atendimento.' });
+    }
   }
   // 2. Datas e horários passados
   const now = new Date();
@@ -254,8 +273,9 @@ app.post('/api/appointments', (req, res) => {
   const diffMs = agendamentoDate - now;
   let antecedenciaMinimaMs = 24 * 60 * 60 * 1000; // 24 horas para presencial
   let mensagemAntecedencia = 'O agendamento presencial deve ser feito com pelo menos 24 horas de antecedência.';
-  
-  if (type && type.toLowerCase().includes('online')) {
+  // Preferir attendance explícito; fallback para inferência antiga pelo type
+  const isOnline = attendance ? attendance.toLowerCase() === 'online' : (type && type.toLowerCase().includes('online'));
+  if (isOnline) {
     antecedenciaMinimaMs = 2 * 60 * 60 * 1000; // 2 horas para online
     mensagemAntecedencia = 'O agendamento online deve ser feito com pelo menos 2 horas de antecedência.';
   }
@@ -318,6 +338,28 @@ app.get('/api/appointments/:userEmail', (req, res) => {
   res.json(userAppointments);
 });
 
+// Endpoint de reset para testes (disponível apenas fora de produção)
+if (process.env.NODE_ENV !== 'production') {
+  /**
+   * @swagger
+   * /api/dev/reset-appointments:
+   *   post:
+   *     summary: Resetar agendamentos (apenas dev/test)
+   *     description: Remove todos os agendamentos. Disponível somente quando NODE_ENV !== 'production'.
+   *     tags: [Desenvolvimento]
+   *     responses:
+   *       200:
+   *         description: Agendamentos resetados
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/SuccessResponse'
+   */
+  app.post('/api/dev/reset-appointments', (req, res) => {
+    dataManager.clearAppointments();
+    res.json({ success: true, message: 'Agendamentos resetados.' });
+  });
+}
 
 /**
  * @swagger

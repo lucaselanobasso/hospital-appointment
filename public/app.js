@@ -283,13 +283,13 @@ function renderAgendar() {
               <!-- Forma de Atendimento - RADIO -->
               <div class='mb-3'>
                 <label class='form-label'>1. Forma de Atendimento</label>
-                <div id='formaAtendimentoGroup'>
+                <div id='formaAtendimentoGroup' data-testid='grupo-forma-atendimento'>
                   <div class='form-check'>
-                    <input class='form-check-input' type='radio' name='formaAtendimento' id='formaPresencial' value='Presencial'>
+                    <input class='form-check-input' type='radio' name='formaAtendimento' id='formaPresencial' value='Presencial' data-testid='forma-presencial'>
                     <label class='form-check-label' for='formaPresencial'>Presencial</label>
                   </div>
                   <div class='form-check'>
-                    <input class='form-check-input' type='radio' name='formaAtendimento' id='formaOnline' value='Online'>
+                    <input class='form-check-input' type='radio' name='formaAtendimento' id='formaOnline' value='Online' data-testid='forma-online'>
                     <label class='form-check-label' for='formaOnline'>Online (Telemedicina)</label>
                   </div>
                 </div>
@@ -298,7 +298,7 @@ function renderAgendar() {
               <!-- Tipo de Serviço - RADIO -->
               <div class='mb-3'>
                 <label class='form-label'>2. Tipo de Serviço</label>
-                <div id='tipoServicoGroup' class='disabled-fieldset'>
+                <div id='tipoServicoGroup' class='disabled-fieldset' data-testid='grupo-tipo-servico'>
                   <!-- Será preenchido dinamicamente -->
                 </div>
               </div>
@@ -306,7 +306,7 @@ function renderAgendar() {
               <!-- Especialidade - RADIO -->
               <div class='mb-3'>
                 <label class='form-label'>3. Especialidade</label>
-                <div id='especialidadeGroup' class='disabled-fieldset'>
+                <div id='especialidadeGroup' class='disabled-fieldset' data-testid='grupo-especialidade'>
                   <!-- Será preenchido dinamicamente -->
                 </div>
               </div>
@@ -314,7 +314,7 @@ function renderAgendar() {
               <!-- Médico - DROPDOWN -->
               <div class='mb-3'>
                 <label class='form-label'>4. Médico</label>
-                <select class='form-select' id='medico' disabled>
+                <select class='form-select' id='medico' disabled data-testid='select-medico'>
                   <option value=''>Selecione uma especialidade primeiro</option>
                 </select>
               </div>
@@ -322,18 +322,18 @@ function renderAgendar() {
               <!-- Data - DD/MM/AAAA -->
               <div class='mb-3'>
                 <label class='form-label'>5. Data (DD/MM/AAAA)</label>
-                <input type='text' class='form-control' id='data' placeholder='DD/MM/AAAA' maxlength='10' disabled>
+                <input type='text' class='form-control' id='data' placeholder='DD/MM/AAAA' maxlength='10' disabled data-testid='input-data'>
               </div>
               
               <!-- Horário - RADIO -->
               <div class='mb-3'>
                 <label class='form-label'>6. Horário</label>
-                <div id='horarioGroup' class='disabled-fieldset'>
+                <div id='horarioGroup' class='disabled-fieldset' data-testid='grupo-horario'>
                   <!-- Será preenchido dinamicamente -->
                 </div>
               </div>
               
-              <button type='button' class='btn btn-success w-100' id='btnResumoAgendamento' disabled>Ver Resumo</button>
+              <button type='button' class='btn btn-success w-100' id='btnResumoAgendamento' disabled data-testid='btn-resumo-agendamento'>Ver Resumo</button>
             </form>
             <div id='agendar-message' class='mt-2 form-message'></div>
           </div>
@@ -352,7 +352,7 @@ function renderAgendar() {
               </div>
               <div class='modal-footer'>
                 <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Voltar para Editar</button>
-                <button type='button' class='btn btn-success' id='btnConfirmarAgendamento'>Confirmar Agendamento</button>
+                <button type='button' class='btn btn-success' id='btnConfirmarAgendamento' data-testid='btn-confirmar-agendamento'>Confirmar Agendamento</button>
               </div>
             </div>
           </div>
@@ -482,12 +482,14 @@ function renderAgendar() {
             });
             
             const tipoGroup = document.getElementById('tipoServicoGroup');
-            tipoGroup.innerHTML = tiposDisponiveis.map(tipo => `
+            tipoGroup.innerHTML = tiposDisponiveis.map(tipo => {
+              const slug = tipo.replace(/\s+/g, '');
+              return `
               <div class='form-check'>
-                <input class='form-check-input' type='radio' name='tipoServico' id='tipo${tipo.replace(/\s+/g, '')}' value='${tipo}'>
-                <label class='form-check-label' for='tipo${tipo.replace(/\s+/g, '')}'>${tipo}</label>
-              </div>
-            `).join('');
+                <input class='form-check-input' type='radio' name='tipoServico' id='tipo${slug}' value='${tipo}' data-testid='tipoServico-${slug}'>
+                <label class='form-check-label' for='tipo${slug}'>${tipo}</label>
+              </div>`;
+            }).join('');
             
             // Adicionar listeners aos novos radio buttons
             document.querySelectorAll('input[name="tipoServico"]').forEach(radio => {
@@ -527,12 +529,14 @@ function renderAgendar() {
           });
           
           const especialidadeGroup = document.getElementById('especialidadeGroup');
-          especialidadeGroup.innerHTML = especialidadesCompativeis.map(esp => `
+          especialidadeGroup.innerHTML = especialidadesCompativeis.map(esp => {
+            const slug = esp.replace(/\s+/g, '');
+            return `
             <div class='form-check'>
-              <input class='form-check-input' type='radio' name='especialidade' id='esp${esp.replace(/\s+/g, '')}' value='${esp}'>
-              <label class='form-check-label' for='esp${esp.replace(/\s+/g, '')}'>${esp}</label>
-            </div>
-          `).join('');
+              <input class='form-check-input' type='radio' name='especialidade' id='esp${slug}' value='${esp}' data-testid='especialidade-${slug}'>
+              <label class='form-check-label' for='esp${slug}'>${esp}</label>
+            </div>`;
+          }).join('');
           
           // Adicionar listeners aos novos radio buttons
           document.querySelectorAll('input[name="especialidade"]').forEach(radio => {
@@ -676,12 +680,14 @@ function renderAgendar() {
             enableFieldset('horarioGroup', true);
             
             const horarioGroup = document.getElementById('horarioGroup');
-            horarioGroup.innerHTML = horariosDisponiveis.map(horario => `
+            horarioGroup.innerHTML = horariosDisponiveis.map(horario => {
+              const slug = horario.replace(':', '');
+              return `
               <div class='form-check'>
-                <input class='form-check-input' type='radio' name='horario' id='hora${horario.replace(':', '')}' value='${horario}'>
-                <label class='form-check-label' for='hora${horario.replace(':', '')}'>${horario}</label>
-              </div>
-            `).join('');
+                <input class='form-check-input' type='radio' name='horario' id='hora${slug}' value='${horario}' data-testid='horario-${slug}'>
+                <label class='form-check-label' for='hora${slug}'>${horario}</label>
+              </div>`;
+            }).join('');
             
             // Adicionar listeners aos novos radio buttons
             document.querySelectorAll('input[name="horario"]').forEach(radio => {
@@ -749,7 +755,8 @@ function renderAgendar() {
               doctorId: selectedMedico, 
               date: isoDate, 
               time: selectedHorario, 
-              type: selectedTipoServico 
+              type: selectedTipoServico,
+              attendance: selectedFormaAtendimento
             })
           });
           
