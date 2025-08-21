@@ -5,7 +5,6 @@ const users = require("../fixtures/users.json")
 describe("Cadastro", () => {
   beforeEach(() => {
     cy.clearCookies()
-    cy.request('POST', 'http://localhost:3001/api/dev/reset-users')
     cy.visit('/')
   })
   it("Ao tentar cadastrar novo usuário válido com dados válidos, deve redirecionar para a página de login e exibir mensagem de sucesso", () => {
