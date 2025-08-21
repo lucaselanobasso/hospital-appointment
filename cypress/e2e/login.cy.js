@@ -52,6 +52,10 @@ describe("Login", () => {
       cy.get("#btnEntrar").click()
       cy.contemTexto("#login-message", "Todos os campos são obrigatórios")
     })
+    it('Ao tentar acessar funcionalidade sem login, deve redirecionar para a página de login', ()=>{
+      cy.visit('/agendamento')
+      cy.get('#menuLogin').should('be.visible')
+    })
   })
   describe('Logout', ()=>{
     it('Ao clicar no nome do usuário e clicar em Sair, deve ser redirecionado para a página de login', ()=>{

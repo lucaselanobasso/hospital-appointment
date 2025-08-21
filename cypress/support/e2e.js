@@ -18,3 +18,10 @@ import './commands'
 
 //Relatorio de testes em HTML
 import 'cypress-mochawesome-reporter/register'
+
+// Resetar o backend antes de cada teste para isolar cenários
+beforeEach(() => {
+  // Se o backend estiver rodando em modo de teste, os dados são apenas em memória,
+  // e este reset garante isolamento entre testes/suítes.
+  cy.resetBackend()
+})

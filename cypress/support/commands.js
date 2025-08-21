@@ -35,3 +35,5 @@ import './commands/login'
 
 //Importando comandos de agendamento
 import './commands/agendamento'
+
+//Importando comandos comuns

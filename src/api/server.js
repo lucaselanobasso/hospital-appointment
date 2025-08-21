@@ -303,7 +303,8 @@ app.post('/api/appointments', (req, res) => {
     specialty: doctor.specialty,
     date,
     time,
-    type
+    type,
+    attendance
   });
   res.json({ success: true, message: 'Agendamento realizado com sucesso!' });
 });
@@ -334,7 +335,10 @@ app.post('/api/appointments', (req, res) => {
  *                 $ref: '#/components/schemas/AppointmentResponse'
  */
 app.get('/api/appointments/:userEmail', (req, res) => {
-  const userAppointments = dataManager.getAppointmentsByUser(req.params.userEmail);
+  const all = dataManager.getAppointments();
+  const userAppointments = all
+    .map((a, i) => ({ ...a, _index: i }))
+    .filter(a => a.userEmail === req.params.userEmail);
   res.json(userAppointments);
 });
 
@@ -358,6 +362,46 @@ if (process.env.NODE_ENV !== 'production') {
   app.post('/api/dev/reset-appointments', (req, res) => {
     dataManager.clearAppointments();
     res.json({ success: true, message: 'Agendamentos resetados.' });
+  });
+
+  /**
+   * @swagger
+   * /api/dev/reset-users:
+   *   post:
+   *     summary: Resetar usuários (apenas dev/test)
+   *     description: Restaura os usuários para o estado padrão. Disponível somente quando NODE_ENV !== 'production'.
+   *     tags: [Desenvolvimento]
+   *     responses:
+   *       200:
+   *         description: Usuários resetados
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/SuccessResponse'
+   */
+  app.post('/api/dev/reset-users', (req, res) => {
+    dataManager.clearUsers();
+    res.json({ success: true, message: 'Usuários resetados.' });
+  });
+
+  /**
+   * @swagger
+   * /api/dev/reset-all:
+   *   post:
+   *     summary: Resetar toda a base (apenas dev/test)
+   *     description: Restaura usuários padrões, limpa agendamentos e mantém médicos padrão. Disponível somente quando NODE_ENV !== 'production'.
+   *     tags: [Desenvolvimento]
+   *     responses:
+   *       200:
+   *         description: Base resetada
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/SuccessResponse'
+   */
+  app.post('/api/dev/reset-all', (req, res) => {
+    dataManager.resetAll();
+    res.json({ success: true, message: 'Base resetada.' });
   });
 }
 
@@ -406,11 +450,14 @@ app.delete('/api/appointments/:index', (req, res) => {
   const now = new Date();
   const agendamentoDate = new Date(agendamento.date + 'T' + agendamento.time);
   let antecedenciaCancelamentoMs = 24 * 60 * 60 * 1000;
-  if (agendamento.type && agendamento.type.toLowerCase().includes('online')) {
+  const isOnline = agendamento.attendance
+    ? agendamento.attendance.toLowerCase() === 'online'
+    : (agendamento.type && agendamento.type.toLowerCase().includes('online'));
+  if (isOnline) {
     antecedenciaCancelamentoMs = 1 * 60 * 60 * 1000;
   }
   if (agendamentoDate - now < antecedenciaCancelamentoMs) {
-    return res.status(400).json({ error: agendamento.type && agendamento.type.toLowerCase().includes('online')
+    return res.status(400).json({ error: isOnline
       ? 'Cancelamento de consulta online só permitido até 1 hora antes.'
       : 'Cancelamento de consulta presencial só permitido até 24 horas antes.' });
   }

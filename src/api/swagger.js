@@ -155,6 +155,11 @@ const options = {
               type: 'string',
               description: 'Tipo de consulta',
               example: 'Consulta de rotina'
+            },
+            attendance: {
+              type: 'string',
+              description: 'Forma de atendimento',
+              example: 'Online'
             }
           }
         },
@@ -190,6 +195,10 @@ const options = {
             type: {
               type: 'string',
               example: 'Consulta de rotina'
+            },
+            attendance: {
+              type: 'string',
+              example: 'Online'
             }
           }
         },

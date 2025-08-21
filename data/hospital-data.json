@@ -7,17 +7,7 @@
       "cpf": "10020030040"
     }
   ],
-  "appointments": [
-    {
-      "userEmail": "joaopedro@gmail.com",
-      "doctorId": "3",
-      "doctorName": "Dr. Pedro Santos",
-      "specialty": "Dermatologia",
-      "date": "2025-08-22",
-      "time": "15:00",
-      "type": "Consulta de rotina"
-    }
-  ],
+  "appointments": [],
   "doctors": [
     {
       "id": 1,

@@ -105,6 +105,10 @@ Aplicação desenvolvida para o **Projeto de Portfólio Pessoal**, no contexto d
 - **Cobertura**: Cenários de cadastro, login e agendamento
 - **Relatórios**: Mochawesome para relatórios visuais
 
+## 📑 Documentação de QA (em atualização)
+
+Esta seção está sendo revisada. Os arquivos `.feature` continuam em `features/` como documentação dos cenários de teste.
+
 ## 📋 Requisitos Funcionais Implementados
 
 ### ✅ **RF01 - Acessar Funcionalidade**

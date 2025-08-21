@@ -813,7 +813,7 @@ function renderMeusAgendamentos() {
               <strong>Tipo:</strong> ${a.type}<br>
               <strong>Data:</strong> ${a.date}<br>
               <strong>Horário:</strong> ${a.time}<br>
-              <button class='btn btn-outline-danger btn-sm mt-2' onclick='cancelAgendamento(${idx})' id='btnCancelarAgendamento${idx}'>Cancelar</button>
+              <button class='btn btn-outline-danger btn-sm mt-2' onclick='cancelAgendamento(${a._index})' id='btnCancelarAgendamento${a._index}'>Cancelar</button>
             </div>
           </div>
         `;

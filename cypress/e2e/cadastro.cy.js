@@ -4,6 +4,8 @@ const users = require("../fixtures/users.json")
 
 describe("Cadastro", () => {
   beforeEach(() => {
+    cy.clearCookies()
+    cy.request('POST', 'http://localhost:3001/api/dev/reset-users')
     cy.visit('/')
   })
   it("Ao tentar cadastrar novo usuário válido com dados válidos, deve redirecionar para a página de login e exibir mensagem de sucesso", () => {
@@ -12,15 +14,15 @@ describe("Cadastro", () => {
     cy.cadastro(users.name, cpfUnico, uniqueEmail, users.password)
     cy.contemTexto("#cadastro-message", "Cadastro realizado com sucesso!")
   })
-  it('Ao tentar cadastrar usuário com um CPF já cadastrado, deve retornar o erro "Usuário já cadastrado com este CPF."', () => {
+  it('Ao tentar cadastrar usuário com um CPF já cadastrado, deve retornar o erro "Usuário já cadastrado com este e-mail ou CPF."', () => {
     const uniqueEmail = `usuario_${Date.now()}@teste.com`
     cy.cadastro("NovoUsuario Oliveira", users.cpf, uniqueEmail, users.password)
-    cy.contemTexto("#cadastro-message", "Usuário já cadastrado com este CPF.")
+    cy.contemTexto("#cadastro-message", "Usuário já cadastrado com este e-mail ou CPF.")
   })
   it('Ao tentar cadastrar usuário com um e-mail já cadastrado, deve retornar o erro "Usuário já cadastrado com este e-mail."', () => {
     const cpfUnico = geraCPF()
     cy.cadastro("NovoUsuario Oliveira", cpfUnico, users.email, users.password)
-    cy.contemTexto("#cadastro-message", "Usuário já cadastrado com este e-mail.")
+    cy.contemTexto("#cadastro-message", "Usuário já cadastrado com este e-mail ou CPF.")
   })
   it('Ao tentar cadastrar usuário com CPF inválido, deve retornar o erro "CPF deve conter 11 dígitos numéricos."', () => {
     const uniqueEmail = `usuario_${Date.now()}@teste.com`

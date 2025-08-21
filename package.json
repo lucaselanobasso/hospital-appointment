@@ -9,6 +9,7 @@
     "test:headed": "cypress run --headed",
     "test:open": "cypress open",
     "start:backend": "node src/api/server.js",
+    "start:backend:test": "set NODE_ENV=test&& node src/api/server.js",
     "start:frontend": "node src/api/static-server.js"
   },
   "keywords": [],

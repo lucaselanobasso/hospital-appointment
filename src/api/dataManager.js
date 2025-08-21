@@ -3,7 +3,9 @@ const path = require('path');
 
 class DataManager {
   constructor() {
+    this.isTest = process.env.NODE_ENV === 'test';
     this.dataFile = path.join(__dirname, '../../data/hospital-data.json');
+    // Em modo de teste, não carregar do disco para evitar persistência entre execuções
     this.data = this.loadData();
   }
 
@@ -190,6 +192,10 @@ class DataManager {
   }
 
   loadData() {
+    // Em testes, sempre iniciar com dados padrão (sem ler/gravar disco)
+    if (this.isTest) {
+      return this.getDefaultData();
+    }
     try {
       if (fs.existsSync(this.dataFile)) {
         const fileData = fs.readFileSync(this.dataFile, 'utf8');
@@ -204,6 +210,10 @@ class DataManager {
   }
 
   saveData() {
+    // Em testes, não persistir em disco para evitar sujar o ambiente
+    if (this.isTest) {
+      return true;
+    }
     try {
       // Criar diretório se não existir
       const dir = path.dirname(this.dataFile);
@@ -273,6 +283,21 @@ class DataManager {
   // Limpar todos os agendamentos (uso em testes/dev)
   clearAppointments() {
     this.data.appointments = [];
+    this.saveData();
+    return true;
+  }
+
+  // Limpar usuários e restaurar apenas os usuários padrão (uso em testes/dev)
+  clearUsers() {
+    const defaults = this.getDefaultData();
+    this.data.users = defaults.users;
+    this.saveData();
+    return true;
+  }
+
+  // Resetar toda a base para os dados padrão (uso em testes/dev)
+  resetAll() {
+    this.data = this.getDefaultData();
     this.saveData();
     return true;
   }
