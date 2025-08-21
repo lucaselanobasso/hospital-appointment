@@ -86,7 +86,7 @@ Aplicação desenvolvida para o **Projeto de Portfólio Pessoal**, no contexto d
 - Persistem: usuários, médicos e agendamentos
 - Salva a cada modificação (cadastro, agendamento, cancelamento)
 
-## 🔧 Arquitetura Técnica
+## 🔍 Detalhes Técnicos
 
 ### **Frontend (SPA)**
 - **Tecnologia**: JavaScript Vanilla + Bootstrap 5
@@ -105,9 +105,13 @@ Aplicação desenvolvida para o **Projeto de Portfólio Pessoal**, no contexto d
 - **Cobertura**: Cenários de cadastro, login e agendamento
 - **Relatórios**: Mochawesome para relatórios visuais
 
-## 📑 Documentação de QA (em atualização)
+## 📚 Documentações
 
-Esta seção está sendo revisada. Os arquivos `.feature` continuam em `features/` como documentação dos cenários de teste.
+- **Plano e Estratégia de Testes**: `documentation/Plano_e_Estrategia_de_Testes.md`
+- **Casos de Teste Detalhados**: `documentation/Casos_De_Teste.md`
+- **Swagger (API REST)**: disponível em `http://localhost:3001/api-docs` e definido em `src/api/swagger.js`
+
+Esses documentos apresentam contexto, escopo, técnicas, cobertura, critérios de entrada/saída, além de cenários e dados de teste. A documentação de API (Swagger) permite explorar e executar os endpoints diretamente no navegador.
 
 ## 📋 Requisitos Funcionais Implementados
 
@@ -221,8 +225,28 @@ npm run test:open
 ```
 
 Observações:
+- **Inicie o backend** antes dos testes: `npm run start:backend` (ou `npm run start:backend:test` para um ambiente de teste)
 - O Cypress usa `baseUrl: http://localhost:3001` (ver `cypress.config.js`)
+- Reporter configurado: `cypress-mochawesome-reporter` (ver `cypress.config.js`). Os relatórios HTML/JSON são gerados na pasta padrão do reporter. Para personalizar, utilize `reporterOptions` no `cypress.config.js`.
 - Para um estado determinístico nos testes, utilize o endpoint de reset: `POST /api/dev/reset-appointments`
+
+### 📦 Scripts NPM úteis
+
+```bash
+# Backend (produção local)
+npm run start:backend
+
+# Backend (modo teste)
+npm run start:backend:test
+
+# Frontend estático (quando necessário)
+npm run start:frontend
+
+# Cypress
+npm test            # headless
+npm run test:headed # headed
+npm run test:open   # UI
+```
 
 ## 📱 Como Usar a Aplicação
 
@@ -353,9 +377,9 @@ hospital-appointment/
 Este projeto faz parte de um portfólio em desenvolvimento. Os próximos passos incluem:
 
 - ✅ **Aplicação completa** (Concluído)
-- ✅ **API documentada** (Concluído)
-- 🔄 **Testes automatizados** (Em desenvolvimento)
-- 📊 **Relatórios de cobertura** (Planejado)
+- ✅ **API documentada (Swagger)** (Concluído)
+- ✅ **Testes E2E com Cypress e reporter** (Concluído/Em evolução)
+- 📊 **Relatórios e métricas adicionais** (Planejado)
 - 🚀 **Deploy em produção** (Planejado)
 
 ## 👨‍💻 Sobre o Desenvolvedor
