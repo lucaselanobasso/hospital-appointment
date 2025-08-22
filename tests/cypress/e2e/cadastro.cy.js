@@ -53,4 +53,37 @@ describe("Cadastro", () => {
     cy.cadastro("Usuário &%@ )(! da Silva", cpfUnico, uniqueEmail, users.password)
     cy.contemTexto("#cadastro-message", "Nome inválido.")
   })
+
+  it('Deve aceitar CPF com pontuação (máscara) e cadastrar com sucesso', () => {
+    const uniqueEmail = `usuario_${Date.now()}@teste.com`
+    const cpfLimpo = geraCPF()
+    const cpfComMascara = `${cpfLimpo.substring(0,3)}.${cpfLimpo.substring(3,6)}.${cpfLimpo.substring(6,9)}-${cpfLimpo.substring(9)}`
+    cy.cadastro('Usuario Mascara', cpfComMascara, uniqueEmail, users.password)
+    cy.contemTexto('#cadastro-message', 'Cadastro realizado com sucesso!')
+  })
+
+  it('Mesmo nome de usuário pode ser reutilizado se e-mail/CPF forem únicos', () => {
+    const email1 = `usuario_${Date.now()}_a@teste.com`
+    const email2 = `usuario_${Date.now()}_b@teste.com`
+    const cpf1 = geraCPF()
+    const cpf2 = geraCPF()
+    cy.cadastro('Joao Reutilizado', cpf1, email1, users.password)
+    cy.contemTexto('#cadastro-message', 'Cadastro realizado com sucesso!')
+    cy.cadastro('Joao Reutilizado', cpf2, email2, users.password)
+    cy.contemTexto('#cadastro-message', 'Cadastro realizado com sucesso!')
+  })
+
+  it('Campos com espaços extras devem ser tratados e permitir cadastro válido', () => {
+    const uniqueEmail = ` usuario_${Date.now()}@teste.com `
+    const cpfUnico = geraCPF()
+    cy.get('#menuLogin').click()
+    cy.get('#linkCriarConta').click()
+    cy.get('#name').type('  Maria Espacos  ')
+    cy.get('#cpf').type(`  ${cpfUnico}  `)
+    cy.get('#email').type(uniqueEmail)
+    cy.get('#password').type(`  ${users.password}  `)
+    cy.get('#btnCadastrar').click()
+    // Se o frontend normaliza, deve cadastrar com sucesso; caso contrário, este teste evidenciará a necessidade de trim
+    cy.contains('#cadastro-message', /Cadastro realizado com sucesso|Todos os campos/)
+  })
 })

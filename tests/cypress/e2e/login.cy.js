@@ -64,5 +64,20 @@ describe("Login", () => {
       cy.get('#logoutBtn').click()
       cy.get('#menuLogin').should('be.visible')
     })
+    it('Após logout, tentar acessar agendamento deve exigir login novamente', () => {
+      cy.login(users.email, users.cpf, users.password)
+      cy.get('#userDropdown').click()
+      cy.get('#logoutBtn').click()
+      cy.visit('/agendamento')
+      cy.get('#menuLogin').should('be.visible')
+    })
+  })
+  
+  describe('Proteção de rota', () => {
+    it('Acessar Meus Agendamentos sem login deve redirecionar ao Login', () => {
+      cy.visit('/')
+      cy.contains('a', 'Meus Agendamentos').click({ force: true })
+      cy.contains('h2', 'Login')
+    })
   })
 })
