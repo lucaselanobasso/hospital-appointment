@@ -1,161 +1,215 @@
 const request = require('supertest')
 const { expect } = require('chai')
 const path = require('path')
-const { isoDate } = require('../util/date')
-const users = require(path.join(__dirname, '../../cypress/fixtures/users.json'))
+const { dataISO } = require('../util/date')
+const usuario = require(path.join(__dirname, '../../cypress/fixtures/users.json'))
 
-const BASE = process.env.BASE_URL || 'http://localhost:3001'
+const URL_BASE = process.env.BASE_URL || 'http://localhost:3001'
 
-async function resetAll() {
-  await request(BASE).post('/api/dev/reset-all')
+async function resetarTudo() {
+  await request(URL_BASE).post('/api/dev/reset-all')
 }
 
-describe('API - Appointments', () => {
+describe('API - Agendamentos', () => {
   beforeEach(async () => {
-    await resetAll()
+    await resetarTudo()
   })
 
   it('Deve criar agendamento válido (presencial) e listar por usuário', async () => {
-    const doctors = await request(BASE).get('/api/doctors')
-    const doctor = doctors.body.find(d => d.specialty === 'Cardiologia')
-    const payload = {
-      userEmail: users.email,
-      doctorId: doctor.id,
-      date: isoDate(2),
+    const medicos = await request(URL_BASE).get('/api/doctors')
+    const medico = medicos.body.find(d => d.specialty === 'Cardiologia')
+    const dados = {
+      userEmail: usuario.email,
+      doctorId: medico.id,
+      date: dataISO(2),
       time: '15:00',
       type: 'Exame',
       attendance: 'Presencial'
     }
-    const res = await request(BASE).post('/api/appointments').send(payload)
-    expect(res.status).to.equal(200)
-    expect(res.body).to.have.property('message')
+    const resposta = await request(URL_BASE).post('/api/appointments').send(dados)
+    expect(resposta.status).to.equal(200)
+    expect(resposta.body).to.have.property('message')
 
-    const list = await request(BASE).get(`/api/appointments/${users.email}`)
-    expect(list.status).to.equal(200)
-    expect(list.body).to.be.an('array')
-    expect(list.body.some(a => a.doctorId === doctor.id)).to.be.true
+    const lista = await request(URL_BASE).get(`/api/appointments/${usuario.email}`)
+    expect(lista.status).to.equal(200)
+    expect(lista.body).to.be.an('array')
+    expect(lista.body.some(a => a.doctorId === medico.id)).to.be.true
   })
 
   it('Não deve permitir agendamento em horário passado', async () => {
-    const doctors = await request(BASE).get('/api/doctors')
-    const doctor = doctors.body[0]
-    const res = await request(BASE).post('/api/appointments').send({
-      userEmail: users.email,
-      doctorId: doctor.id,
-      date: isoDate(-1),
+    const medicos = await request(URL_BASE).get('/api/doctors')
+    const medico = medicos.body[0]
+    const resposta = await request(URL_BASE).post('/api/appointments').send({
+      userEmail: usuario.email,
+      doctorId: medico.id,
+      date: dataISO(-1),
       time: '08:00',
       type: 'Consulta de rotina',
       attendance: 'Presencial'
     })
-    expect(res.status).to.equal(400)
-    expect(res.body.error).to.match(/anteriores/)
+    expect(resposta.status).to.equal(400)
+    expect(resposta.body.error).to.match(/anteriores/)
   })
 
   it('Não deve permitir fora do horário de funcionamento', async () => {
-    const doctors = await request(BASE).get('/api/doctors')
-    const doctor = doctors.body[0]
-    const res = await request(BASE).post('/api/appointments').send({
-      userEmail: users.email,
-      doctorId: doctor.id,
-      date: isoDate(2),
+    const medicos = await request(URL_BASE).get('/api/doctors')
+    const medico = medicos.body[0]
+    const resposta = await request(URL_BASE).post('/api/appointments').send({
+      userEmail: usuario.email,
+      doctorId: medico.id,
+      date: dataISO(2),
       time: '06:00',
       type: 'Consulta de rotina',
       attendance: 'Presencial'
     })
-    expect(res.status).to.equal(400)
-    expect(res.body.error).to.match(/Horário fora do funcionamento/)
+    expect(resposta.status).to.equal(400)
+    expect(resposta.body.error).to.match(/Horário fora do funcionamento/)
   })
 
   it('Respeitar antecedência: presencial 24h, online 2h', async () => {
-    const doctors = await request(BASE).get('/api/doctors')
-    const doctor = doctors.body[0]
-    const pres = await request(BASE).post('/api/appointments').send({
-      userEmail: users.email,
-      doctorId: doctor.id,
-      date: isoDate(0),
+    const medicos = await request(URL_BASE).get('/api/doctors')
+    const medico = medicos.body[0]
+    const presencial = await request(URL_BASE).post('/api/appointments').send({
+      userEmail: usuario.email,
+      doctorId: medico.id,
+      date: dataISO(0),
       time: '23:59',
       type: 'Consulta de rotina',
       attendance: 'Presencial'
     })
-    expect(pres.status).to.equal(400)
+    expect(presencial.status).to.equal(400)
 
-    const onl = await request(BASE).post('/api/appointments').send({
-      userEmail: users.email,
-      doctorId: doctor.id,
-      date: isoDate(0),
+    const onlineRes = await request(URL_BASE).post('/api/appointments').send({
+      userEmail: usuario.email,
+      doctorId: medico.id,
+      date: dataISO(0),
       time: '23:59',
       type: 'Consulta de rotina',
       attendance: 'Online'
     })
-    expect(onl.status).to.be.oneOf([200, 400])
+    expect(onlineRes.status).to.be.oneOf([200, 400])
   })
 
   it('Conflito: não criar duas consultas no mesmo horário para o mesmo médico', async () => {
-    const doctors = await request(BASE).get('/api/doctors')
-    const doctor = doctors.body[0]
-    const basePayload = {
-      userEmail: users.email,
-      doctorId: doctor.id,
-      date: isoDate(2),
+    const medicos = await request(URL_BASE).get('/api/doctors')
+    const medico = medicos.body[0]
+    const dadosBase = {
+      userEmail: usuario.email,
+      doctorId: medico.id,
+      date: dataISO(2),
       time: '10:00',
       type: 'Consulta de rotina',
       attendance: 'Presencial'
     }
-    const ok = await request(BASE).post('/api/appointments').send(basePayload)
+    const ok = await request(URL_BASE).post('/api/appointments').send(dadosBase)
     expect(ok.status).to.equal(200)
-    const conflict = await request(BASE).post('/api/appointments').send({ ...basePayload, userEmail: 'outro@teste.com' })
-    expect(conflict.status).to.equal(400)
-    expect(conflict.body.error).to.match(/já possui agendamento/)
+    const conflito = await request(URL_BASE).post('/api/appointments').send({ ...dadosBase, userEmail: 'outro@teste.com' })
+    expect(conflito.status).to.equal(400)
+    expect(conflito.body.error).to.match(/já possui agendamento/)
   })
 
   it('Limite diário: não permitir mais de uma com mesmo médico na mesma data para o mesmo usuário', async () => {
-    const doctors = await request(BASE).get('/api/doctors')
-    const doctor = doctors.body[0]
-    const payload = {
-      userEmail: users.email,
-      doctorId: doctor.id,
-      date: isoDate(3),
+    const medicos = await request(URL_BASE).get('/api/doctors')
+    const medico = medicos.body[0]
+    const dados = {
+      userEmail: usuario.email,
+      doctorId: medico.id,
+      date: dataISO(3),
       time: '11:00',
       type: 'Consulta de rotina',
       attendance: 'Presencial'
     }
-    const ok = await request(BASE).post('/api/appointments').send(payload)
+    const ok = await request(URL_BASE).post('/api/appointments').send(dados)
     expect(ok.status).to.equal(200)
-    const dup = await request(BASE).post('/api/appointments').send({ ...payload, time: '12:00' })
-    expect(dup.status).to.equal(400)
-    expect(dup.body.error).to.match(/já possui agendamento/)
+    const duplicado = await request(URL_BASE).post('/api/appointments').send({ ...dados, time: '12:00' })
+    expect(duplicado.status).to.equal(400)
+    expect(duplicado.body.error).to.match(/já possui agendamento/)
   })
 
   it('Cancelamento: respeitar prazos por forma de atendimento', async () => {
-    const doctors = await request(BASE).get('/api/doctors')
-    const doctor = doctors.body[0]
-    // Cria um online com mais de 1h e um presencial com mais de 24h
-    const online = await request(BASE).post('/api/appointments').send({
-      userEmail: users.email,
-      doctorId: doctor.id,
-      date: isoDate(1),
-      time: '17:00',
+    const medicos = await request(URL_BASE).get('/api/doctors')
+    const medico = medicos.body[0]
+    const online = await request(URL_BASE).post('/api/appointments').send({
+      userEmail: usuario.email,
+      doctorId: medico.id,
+      date: dataISO(1),
+      time: '09:00',
       type: 'Consulta de rotina',
       attendance: 'Online'
     })
     expect(online.status).to.equal(200)
 
-    const pres = await request(BASE).post('/api/appointments').send({
-      userEmail: users.email,
-      doctorId: doctor.id,
-      date: isoDate(2),
+    const presencial = await request(URL_BASE).post('/api/appointments').send({
+      userEmail: usuario.email,
+      doctorId: medico.id,
+      date: dataISO(2),
       time: '09:00',
       type: 'Consulta de rotina',
       attendance: 'Presencial'
     })
-    expect(pres.status).to.equal(200)
+    expect(presencial.status).to.equal(200)
 
-    // Captura indices do usuário e tenta cancelar
-    const list = await request(BASE).get(`/api/appointments/${users.email}`)
-    const idxs = list.body.map(a => a._index)
-    for (const idx of idxs) {
-      const del = await request(BASE).delete(`/api/appointments/${idx}`)
+    const lista = await request(URL_BASE).get(`/api/appointments/${usuario.email}`)
+    const indices = lista.body.map(a => a._index)
+    for (const idx of indices) {
+      const del = await request(URL_BASE).delete(`/api/appointments/${idx}`)
       expect(del.status).to.be.oneOf([200, 400])
     }
+  })
+
+  it('GET /api/appointments deve retornar 200 e lista de todos os agendamentos', async () => {
+    const resposta = await request(URL_BASE).get('/api/appointments')
+    expect(resposta.status).to.equal(200)
+    expect(resposta.body).to.be.an('array')
+  })
+
+  it('Não deve permitir médico inexistente', async () => {
+    const resposta = await request(URL_BASE).post('/api/appointments').send({
+      userEmail: usuario.email,
+      doctorId: 9999,
+      date: dataISO(3),
+      time: '10:00',
+      type: 'Consulta de rotina',
+      attendance: 'Presencial'
+    })
+    expect(resposta.status).to.equal(400)
+    expect(resposta.body.error).to.match(/Médico não encontrado/i)
+  })
+
+  it('Não deve permitir especialidade divergente quando enviada', async () => {
+    const medicos = await request(URL_BASE).get('/api/doctors')
+    const medico = medicos.body.find(d => d.specialty === 'Cardiologia')
+    const resposta = await request(URL_BASE).post('/api/appointments').send({
+      userEmail: usuario.email,
+      doctorId: medico.id,
+      date: dataISO(3),
+      time: '10:00',
+      type: 'Consulta de rotina',
+      attendance: 'Presencial',
+      specialty: 'Dermatologia'
+    })
+    expect(resposta.status).to.equal(400)
+    expect(resposta.body.error).to.match(/Médico não atende a especialidade/i)
+  })
+
+  it('Serviço não disponível para especialidade/forma de atendimento', async () => {
+    const medicos = await request(URL_BASE).get('/api/doctors')
+    const medico = medicos.body.find(d => d.specialty === 'Ortopedia')
+    const resposta = await request(URL_BASE).post('/api/appointments').send({
+      userEmail: usuario.email,
+      doctorId: medico.id,
+      date: dataISO(3),
+      time: '10:00',
+      type: 'Retorno',
+      attendance: 'Online'
+    })
+    expect(resposta.status).to.equal(400)
+    expect(resposta.body.error).to.match(/Serviço não disponível/i)
+  })
+
+  it('DELETE deve retornar 404 para índice inexistente', async () => {
+    const resposta = await request(URL_BASE).delete('/api/appointments/9999')
+    expect(resposta.status).to.equal(404)
+    expect(resposta.body.error).to.match(/não encontrado/i)
   })
 })

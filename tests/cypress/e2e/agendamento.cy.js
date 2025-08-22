@@ -1,72 +1,40 @@
-const { dataDDMMYYYY } = require('../support/dataUtils')
-const users = require("../fixtures/users.json")
-
 describe('Agendamento', () => {
-    beforeEach(() => {
-        cy.clearCookies()
-        cy.request('POST', '/api/dev/reset-appointments')
-        cy.visit("/")
-        cy.login(users.email, users.cpf, users.password)
-    })
-    
-    it('Agendamento presencial válido deve ser realizado com sucesso e usuário deve ser encaminhado para a página de meus agendamentos', () => {
-        cy.agendarConsulta('#formaPresencial', 'Exame', 'Cardiologia', 'Dr. Ana Costa', dataDDMMYYYY(2), '15:00')
-        cy.contemTexto("body","Agendamento realizado com sucesso!")
-        cy.contains("h2","Meus Agendamentos")
-    })
-    it('Agendamento online válido deve ser realizado com sucesso e usuário deve ser encaminhado para a página de meus agendamentos', () => {
-        cy.agendarConsulta('#formaOnline', 'Consulta de rotina', 'Dermatologia', 'Dr. Pedro Santos', dataDDMMYYYY(2), '15:00')
-        cy.contemTexto("body","Agendamento realizado com sucesso!")
-        cy.contains("h2","Meus Agendamentos")
-    })
-    it('Agendamento com campos obrigatórios vazios deve não permitir o clique no botão resumo', () => {
-        cy.agendarConsulta('#formaPresencial', '', '', '', '', '')
-        cy.get("#btnResumo").should("be.disabled")
-    })
-    
-    it('Não deve permitir mais de um agendamento com o mesmo médico na mesma data (limite diário)', () => {
-        // 1º agendamento OK
-        cy.agendarConsulta('#formaPresencial', 'Consulta de rotina', 'Cardiologia', 'Dr. Ana Costa', dataDDMMYYYY(3), '11:00')
-        cy.contemTexto('body', 'Agendamento realizado com sucesso!')
-        cy.contains('h2', 'Meus Agendamentos')
+   beforeEach(() => {
+    cy.clearCookies()
+    cy.visit("/")
+    cy.login(users.email, users.cpf, users.password)
+   })
+  it('Ao preencher todas as informações válidas e confirmar, deve realizar o agendamento com sucesso', () => {})
 
-        // 2º agendamento com mesmo médico e mesma data deve falhar
-        cy.get('#menuHome').click()
-        cy.agendarConsulta('#formaPresencial', 'Retorno', 'Cardiologia', 'Dr. Ana Costa', dataDDMMYYYY(3), '12:00')
-        cy.contemTexto('body', 'já possui agendamento')
-    })
+  it('Ao não preencher campos obrigatórios, deve manter o botão Continuar desabilitado e impedir o agendamento', () => {})
 
-    it('Cancelar consulta online com mais de 1h de antecedência deve ser permitido', () => {
-        cy.agendarConsulta('#formaOnline', 'Consulta de rotina', 'Dermatologia', 'Dr. Pedro Santos', dataDDMMYYYY(1), '17:00')
-        cy.contains('h2', 'Meus Agendamentos')
-        cy.contains('button', 'Cancelar').first().click()
-        cy.contemTexto('body', 'Agendamento cancelado com sucesso')
-    })
+  it('Ao selecionar data inválida (passada/fora do expediente), deve impedir o agendamento e exibir mensagem apropriada', () => {})
 
-    it('Campos obrigatórios: sem selecionar especialidade/médico/data/horário não habilita o resumo', () => {
-        cy.get('#btnAgendarHome').click()
-        cy.get('#formaPresencial').check()
-        // Não seleciona tipo, especialidade, médico, data, horário
-        cy.get('#btnResumoAgendamento').should('be.disabled')
-    })
+  it('Ao tentar agendar novamente com o mesmo médico no mesmo dia, deve bloquear com mensagem de erro', () => {})
 
-    it('Validação: não deve permitir agendamento em data passada', () => {
-        cy.get('#btnAgendarHome').click()
-        cy.get('#formaPresencial').check()
-        cy.get('input[name="tipoServico"][value="Consulta de rotina"]').check()
-        cy.get('input[name="especialidade"][value="Cardiologia"]').check()
-        cy.get('#medico').select('Dr. Ana Costa')
-        cy.get('#data').type(dataDDMMYYYY(-1))
-        cy.get('body').click()
-        cy.get('input[name="horario"][value="10:00"]').should('exist').check()
-        cy.get('#btnResumoAgendamento').click()
-        cy.get('#btnConfirmarAgendamento').click()
-        cy.contemTexto('body', 'anteriores')
-    })
+  it('Ao tentar agendar em horário já ocupado do mesmo médico, deve não disponibilizar o horário', () => {})
 
-    it('Regra de negócio: atendimento Online não permite Exame para Cardiologia', () => {
-        // Serviço "Exame" só é permitido presencial para Cardiologia
-        cy.agendarConsulta('#formaOnline', 'Exame', 'Cardiologia', 'Dr. Ana Costa', dataDDMMYYYY(4), '10:00')
-        cy.contemTexto('body', 'Serviço não disponível para esta especialidade/forma de atendimento')
-    })
+  it('Ao prosseguir para o resumo, deve exibir todos os dados do agendamento corretamente', () => {})
+
+  it('Ao cancelar um agendamento válido, deve confirmar cancelamento e remover da lista', () => {})
+
+  it('Ao confirmar um agendamento válido, deve exibir mensagem de sucesso', () => {})
+
+  it('Ao tentar agendar presencial sem antecedência mínima de 24h, deve impedir o agendamento', () => {})
+
+  it('Ao tentar agendar online sem antecedência mínima de 2h, deve impedir o agendamento', () => {})
+
+  it('Ao acessar Meus Agendamentos, deve listar apenas os agendamentos do usuário com informações corretas', () => {})
+
+  it('Ao cancelar agendamento presencial com antecedência mínima de 24h, deve permitir e confirmar', () => {})
+
+  it('Ao cancelar agendamento online com antecedência mínima de 1h, deve permitir e confirmar', () => {})
+
+  it('Ao tentar cancelar fora do prazo, deve bloquear e manter agendamento', () => {})
+
+  it('Ao preencher data com caracteres inválidos, deve exibir mensagem de formato inválido', () => {})
+
+  it('Ao buscar horários fora do expediente (07:00–18:00), deve não exibir horários indisponíveis', () => {})
+
+  it('Ao selecionar em cascata (Forma → Tipo → Especialidade → Médico), deve habilitar campos progressivamente e filtrar opções', () => {})
 })

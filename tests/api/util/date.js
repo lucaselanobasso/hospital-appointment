@@ -12,4 +12,7 @@ function hhmm(hours = 0) {
   return `${h}:${m}`
 }
 
-module.exports = { isoDate, hhmm }
+const dataISO = isoDate
+const horaMM = hhmm
+
+module.exports = { isoDate, hhmm, dataISO, horaMM }

@@ -10,7 +10,7 @@ Cypress.Commands.add('agendarConsulta', (formaConsulta, tipoServico, especialida
      cy.get('#medico').should('be.visible').select(medico)
      cy.get('#data').should('not.be.disabled')
      cy.get('#data').type(dataValor)
-     cy.get('body').click() // Forçando a exibição da próxima etapa
+     cy.get('body').click()
      cy.get(`input[name="horario"][value="${horaValor}"]`).should('be.visible').check()
      cy.get('#btnResumoAgendamento').should('not.be.disabled').click()
      cy.get('#btnConfirmarAgendamento').should('be.visible').click()

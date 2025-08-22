@@ -8,7 +8,7 @@
 
 ### Caso de Teste 030
 **ID:** CT030  
-**Título:** Visualização da página de Doutores  
+**Título:** Ao acessar "Nossos Doutores", deve exibir a página com 15 médicos em 5 especialidades  
 **Prioridade:** Média  
 **Rastreabilidade:** CT01 (Navegação) - US17
 
@@ -33,7 +33,7 @@
 
 ### Caso de Teste 031
 **ID:** CT031  
-**Título:** Filtro de médicos por especialidade  
+**Título:** Ao filtrar médicos por especialidade, deve exibir apenas a especialidade selecionada e permitir limpar o filtro  
 **Prioridade:** Média  
 **Rastreabilidade:** CT02 (Navegação) - US18
 
@@ -58,7 +58,7 @@
 
 ### Caso de Teste 032
 **ID:** CT032  
-**Título:** Filtro de médicos por nome  
+**Título:** Ao filtrar médicos por nome, deve exibir apenas correspondentes; ao limpar, restaura a lista; sem resultados, informa ausência  
 **Prioridade:** Média  
 **Rastreabilidade:** CT03 (Navegação) - US18
 
@@ -84,7 +84,7 @@
 
 ### Caso de Teste 033
 **ID:** CT033  
-**Título:** Visualização da página Sobre Nós  
+**Título:** Ao acessar "Sobre Nós", deve exibir conteúdo institucional e manter a navegação  
 **Prioridade:** Baixa  
 **Rastreabilidade:** CT04 (Navegação) - US19
 
@@ -108,7 +108,7 @@
 
 ### Caso de Teste 034
 **ID:** CT034  
-**Título:** Visualização da página Contato  
+**Título:** Ao acessar "Contato", deve exibir informações de contato acessíveis  
 **Prioridade:** Baixa  
 **Rastreabilidade:** CT05 (Navegação) - US20
 
@@ -132,7 +132,7 @@
 
 ### Caso de Teste 035
 **ID:** CT035  
-**Título:** Modal de detalhes do médico  
+**Título:** Ao abrir o modal de detalhes do médico, deve exibir informações completas e permitir fechar  
 **Prioridade:** Média  
 **Rastreabilidade:** CT06 (Navegação) - US22
 
@@ -158,7 +158,7 @@
 
 ### Caso de Teste 036
 **ID:** CT036  
-**Título:** Agendamento direto via modal do médico  
+**Título:** Ao clicar em "Agendar Consulta" no modal, deve redirecionar conforme autenticação e pré-selecionar o médico  
 **Prioridade:** Média  
 **Rastreabilidade:** CT07 (Navegação) - US22
 

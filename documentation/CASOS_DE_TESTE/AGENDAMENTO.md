@@ -8,7 +8,7 @@
 
 ### Caso de Teste 013
 **ID:** CT013  
-**Título:** Agendamento completo com informações válidas  
+**Título:** Ao preencher todas as informações válidas e confirmar, deve realizar o agendamento com sucesso  
 **Prioridade:** Alta  
 **Rastreabilidade:** CT01 (Agendamento) - US04 + US11
 
@@ -39,7 +39,7 @@
 
 ### Caso de Teste 014
 **ID:** CT014  
-**Título:** Agendamento com campos obrigatórios não preenchidos  
+**Título:** Ao não preencher campos obrigatórios, deve manter o botão Continuar desabilitado e impedir o agendamento  
 **Prioridade:** Alta  
 **Rastreabilidade:** CT02 (Agendamento) - US04
 
@@ -64,7 +64,7 @@
 
 ### Caso de Teste 015
 **ID:** CT015  
-**Título:** Agendamento com data inválida (passada ou fora do expediente)  
+**Título:** Ao selecionar data inválida (passada/fora do expediente), deve impedir o agendamento e exibir mensagem apropriada  
 **Prioridade:** Alta  
 **Rastreabilidade:** CT03 (Agendamento) - US04 + US10 + US12
 
@@ -89,7 +89,7 @@
 
 ### Caso de Teste 016
 **ID:** CT016  
-**Título:** Tentativa de agendamento duplo com mesmo médico no mesmo dia  
+**Título:** Ao tentar agendar novamente com o mesmo médico no mesmo dia, deve bloquear com mensagem de erro  
 **Prioridade:** Alta  
 **Rastreabilidade:** CT04 (Agendamento) - US13
 
@@ -116,7 +116,7 @@
 
 ### Caso de Teste 017
 **ID:** CT017  
-**Título:** Conflito de horário - mesmo médico, mesmo horário  
+**Título:** Ao tentar agendar em horário já ocupado do mesmo médico, deve não disponibilizar o horário  
 **Prioridade:** Alta  
 **Rastreabilidade:** CT05 (Agendamento) - US14
 
@@ -142,7 +142,7 @@
 
 ### Caso de Teste 018
 **ID:** CT018  
-**Título:** Exibição do resumo antes da confirmação  
+**Título:** Ao prosseguir para o resumo, deve exibir todos os dados do agendamento corretamente  
 **Prioridade:** Média  
 **Rastreabilidade:** CT06 (Agendamento) - US11
 
@@ -169,7 +169,7 @@
 
 ### Caso de Teste 019
 **ID:** CT019  
-**Título:** Cancelamento de agendamento existente  
+**Título:** Ao cancelar um agendamento válido, deve confirmar cancelamento e remover da lista  
 **Prioridade:** Média  
 **Rastreabilidade:** CT07 (Agendamento) - US15
 
@@ -197,7 +197,7 @@
 
 ### Caso de Teste 020
 **ID:** CT020  
-**Título:** Mensagem de sucesso após agendamento válido  
+**Título:** Ao confirmar um agendamento válido, deve exibir mensagem de sucesso  
 **Prioridade:** Baixa  
 **Rastreabilidade:** CT08 (Agendamento) - US05
 
@@ -218,7 +218,7 @@
 
 ### Caso de Teste 021
 **ID:** CT021  
-**Título:** Agendamento presencial sem antecedência mínima (24 horas)  
+**Título:** Ao tentar agendar presencial sem antecedência mínima de 24h, deve impedir o agendamento  
 **Prioridade:** Alta  
 **Rastreabilidade:** CT09 (Agendamento) - US10 + US12
 
@@ -245,7 +245,7 @@
 
 ### Caso de Teste 022
 **ID:** CT022  
-**Título:** Agendamento online sem antecedência mínima (2 horas)  
+**Título:** Ao tentar agendar online sem antecedência mínima de 2h, deve impedir o agendamento  
 **Prioridade:** Alta  
 **Rastreabilidade:** CT10 (Agendamento) - US10 + US12
 
@@ -272,7 +272,7 @@
 
 ### Caso de Teste 023
 **ID:** CT023  
-**Título:** Visualização de agendamentos do usuário  
+**Título:** Ao acessar Meus Agendamentos, deve listar apenas os agendamentos do usuário com informações corretas  
 **Prioridade:** Média  
 **Rastreabilidade:** CT11 (Agendamento) - US21
 
@@ -298,7 +298,7 @@
 
 ### Caso de Teste 024
 **ID:** CT024  
-**Título:** Cancelamento de agendamento presencial dentro do prazo (24h)  
+**Título:** Ao cancelar agendamento presencial com antecedência mínima de 24h, deve permitir e confirmar  
 **Prioridade:** Média  
 **Rastreabilidade:** CT12 (Agendamento) - US15
 
@@ -325,7 +325,7 @@
 
 ### Caso de Teste 025
 **ID:** CT025  
-**Título:** Cancelamento de agendamento online dentro do prazo (1h)  
+**Título:** Ao cancelar agendamento online com antecedência mínima de 1h, deve permitir e confirmar  
 **Prioridade:** Média  
 **Rastreabilidade:** CT13 (Agendamento) - US15
 
@@ -352,7 +352,7 @@
 
 ### Caso de Teste 026
 **ID:** CT026  
-**Título:** Tentativa de cancelamento fora do prazo  
+**Título:** Ao tentar cancelar fora do prazo, deve bloquear e manter agendamento  
 **Prioridade:** Alta  
 **Rastreabilidade:** CT14 (Agendamento) - US15
 
@@ -378,7 +378,7 @@
 
 ### Caso de Teste 027
 **ID:** CT027  
-**Título:** Data preenchida com caracteres inválidos  
+**Título:** Ao preencher data com caracteres inválidos, deve exibir mensagem de formato inválido  
 **Prioridade:** Média  
 **Rastreabilidade:** CT15 (Agendamento) - US10
 
@@ -403,7 +403,7 @@
 
 ### Caso de Teste 028
 **ID:** CT028  
-**Título:** Agendamento fora do horário de funcionamento (07:00-18:00)  
+**Título:** Ao buscar horários fora do expediente (07:00–18:00), deve não exibir horários indisponíveis  
 **Prioridade:** Alta  
 **Rastreabilidade:** CT16 (Agendamento) - US12
 
@@ -428,7 +428,7 @@
 
 ### Caso de Teste 029
 **ID:** CT029  
-**Título:** Seleção em cascata - Forma → Tipo → Especialidade → Médico  
+**Título:** Ao selecionar em cascata (Forma → Tipo → Especialidade → Médico), deve habilitar campos progressivamente e filtrar opções  
 **Prioridade:** Alta  
 **Rastreabilidade:** CT17 (Agendamento) - US06 + US07 + US08 + US09
 
