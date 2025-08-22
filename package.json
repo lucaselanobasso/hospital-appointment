@@ -10,7 +10,9 @@
     "test:open": "cypress open",
     "start:backend": "node src/api/server.js",
     "start:backend:test": "set NODE_ENV=test&& node src/api/server.js",
-    "start:frontend": "node src/api/static-server.js"
+    "start:frontend": "node src/api/static-server.js",
+    "test:api": "mocha \"tests/api/test/**/*.spec.js\"",
+    "test:api:watch": "mocha --watch \"tests/api/test/**/*.spec.js\""
   },
   "keywords": [],
   "author": "",
@@ -26,6 +28,9 @@
     "swagger-ui-express": "^5.0.0"
   },
   "devDependencies": {
-    "cypress-mochawesome-reporter": "^4.0.0"
+    "chai": "^4.5.0",
+    "cypress-mochawesome-reporter": "^4.0.0",
+    "mocha": "^10.8.2",
+    "supertest": "^7.1.4"
   }
 }

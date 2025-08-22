@@ -7,7 +7,18 @@
       "cpf": "10020030040"
     }
   ],
-  "appointments": [],
+  "appointments": [
+    {
+      "userEmail": "joaopedro@gmail.com",
+      "doctorId": "4",
+      "doctorName": "Dr. Ana Costa",
+      "specialty": "Cardiologia",
+      "date": "2025-08-23",
+      "time": "15:00",
+      "type": "Exame",
+      "attendance": "Presencial"
+    }
+  ],
   "doctors": [
     {
       "id": 1,
