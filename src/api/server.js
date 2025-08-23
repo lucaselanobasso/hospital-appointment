@@ -1,4 +1,4 @@
-// Backend API para agendamento de consultas
+
 
 const express = require('express');
 const cors = require('cors');
@@ -14,24 +14,24 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-// Servir arquivos estáticos do diretório 'public'
+
 app.use(express.static(path.join(__dirname, '../../public')));
 
-// Swagger UI
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'Hospital Verde API'
 }));
 
-// Rota para servir index.html na raiz
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../../public/index.html'));
 });
 
-// Dados persistidos via DataManager
-// Removidos arrays em memória - agora usando dataManager
 
-// Rotas da API
+
+
+
 
 /**
  * @swagger
@@ -65,7 +65,7 @@ app.post('/api/register', (req, res) => {
   if (!name || !email || !password || !cpf) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
   }
-  // CPF: remover pontos e traço, validar 11 dígitos
+  
   const cleanCpf = (cpf || '').replace(/\D/g, '');
   if (!cleanCpf || cleanCpf.length !== 11) {
     return res.status(400).json({ error: 'CPF deve conter 11 dígitos numéricos.' });
@@ -220,21 +220,21 @@ app.get('/api/appointments', (req, res) => {
  */
 app.post('/api/appointments', (req, res) => {
   const { userEmail, doctorId, date, time, type, attendance } = req.body;
-  // 4. Validação de campos obrigatórios
+  
   if (!userEmail || !doctorId || !date || !time || !type) {
     return res.status(400).json({ error: 'Todos os campos do agendamento são obrigatórios.' });
   }
-  // Buscar dados do médico
+  
   const doctor = dataManager.findDoctor(doctorId);
   if (!doctor) {
     return res.status(400).json({ error: 'Médico não encontrado.' });
   }
-  // 5. Especialidade associada ao médico
+  
   if (doctor.specialty !== req.body.specialty && req.body.specialty) {
     return res.status(400).json({ error: 'Médico não atende a especialidade selecionada.' });
   }
-  // 6. Serviços compatíveis com a especialidade e forma de atendimento (compatível com o frontend)
-  // Mantém retrocompatibilidade: se attendance não vier, validação é permissiva.
+  
+  
   const servicosFE = {
     'Cardiologia': {
       'Presencial': ['Exame', 'Consulta de rotina', 'Retorno'],
@@ -263,36 +263,36 @@ app.post('/api/appointments', (req, res) => {
       return res.status(400).json({ error: 'Serviço não disponível para esta especialidade/forma de atendimento.' });
     }
   }
-  // 2. Datas e horários passados
+  
   const now = new Date();
   const agendamentoDate = new Date(date + 'T' + time);
   if (agendamentoDate < now) {
     return res.status(400).json({ error: 'Não é permitido agendar para datas/horários anteriores ao momento atual.' });
   }
-  // 8. Antecedência mínima de agendamento (24 horas presencial, 2 horas online)
+  
   const diffMs = agendamentoDate - now;
-  let antecedenciaMinimaMs = 24 * 60 * 60 * 1000; // 24 horas para presencial
+  let antecedenciaMinimaMs = 24 * 60 * 60 * 1000; 
   let mensagemAntecedencia = 'O agendamento presencial deve ser feito com pelo menos 24 horas de antecedência.';
-  // Preferir attendance explícito; fallback para inferência antiga pelo type
+  
   const isOnline = attendance ? attendance.toLowerCase() === 'online' : (type && type.toLowerCase().includes('online'));
   if (isOnline) {
-    antecedenciaMinimaMs = 2 * 60 * 60 * 1000; // 2 horas para online
+    antecedenciaMinimaMs = 2 * 60 * 60 * 1000; 
     mensagemAntecedencia = 'O agendamento online deve ser feito com pelo menos 2 horas de antecedência.';
   }
   
   if (diffMs < antecedenciaMinimaMs) {
     return res.status(400).json({ error: mensagemAntecedencia });
   }
-  // 7. Horário de funcionamento do hospital (07:00 às 18:00)
+  
   const hora = parseInt(time.split(':')[0], 10);
   if (hora < 7 || hora > 18) {
     return res.status(400).json({ error: 'Horário fora do funcionamento do hospital (07:00 às 18:00).' });
   }
-  // 1. Conflito de horário: médico não pode ter dois agendamentos no mesmo horário
+  
   if (dataManager.hasConflict(doctorId, date, time)) {
     return res.status(400).json({ error: 'Este médico já possui agendamento neste horário.' });
   }
-  // 9. Limite diário por paciente: não pode agendar mais de uma consulta com o mesmo médico na mesma data
+  
   if (dataManager.hasDailyLimit(userEmail, doctorId, date)) {
     return res.status(400).json({ error: 'Você já possui agendamento com este médico nesta data.' });
   }
@@ -342,7 +342,7 @@ app.get('/api/appointments/:userEmail', (req, res) => {
   res.json(userAppointments);
 });
 
-// Endpoint de reset para testes (disponível apenas fora de produção)
+
 if (process.env.NODE_ENV !== 'production') {
   /**
    * @swagger
@@ -446,7 +446,7 @@ app.delete('/api/appointments/:index', (req, res) => {
   if (!agendamento) {
     return res.status(404).json({ error: 'Agendamento não encontrado.' });
   }
-  // 10. Cancelamento: presencial até 24h antes, online até 1h antes
+  
   const now = new Date();
   const agendamentoDate = new Date(agendamento.date + 'T' + agendamento.time);
   let antecedenciaCancelamentoMs = 24 * 60 * 60 * 1000;

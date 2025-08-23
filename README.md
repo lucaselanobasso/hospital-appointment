@@ -3,7 +3,7 @@
 
 <div align="center">
 
-![Status](https://img.shields.io/badge/Status-Produção-success)
+![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow)
 ![Versão](https://img.shields.io/badge/Versão-1.0.0-blue)
 ![Licença](https://img.shields.io/badge/Licença-ISC-green)
 ![Node](https://img.shields.io/badge/Node.js-16+-green)
@@ -15,6 +15,8 @@
 </div>
 
 ## 📋 Sobre o Projeto
+
+> Aviso importante: Esta não é a versão final. Ainda há testes adicionais a serem implementados e validados. Algumas melhorias e correções estão em andamento.
 
 Aplicação desenvolvida para o **Projeto de Portfólio Pessoal**, no contexto da **Mentoria 2.0 em Testes de Software** com **Julio de Lima**. O foco é qualidade de software, testes automatizados (Cypress) e boas práticas de desenvolvimento, aplicadas a um sistema realista de agendamento hospitalar.
 
@@ -102,8 +104,9 @@ Aplicação desenvolvida para o **Projeto de Portfólio Pessoal**, no contexto d
 
 ### **Testes**
 - **Framework**: Cypress para testes E2E
-- **Cobertura**: Cenários de cadastro, login e agendamento
+- **Cobertura**: Cenários de cadastro, login e agendamento (em evolução)
 - **Relatórios**: Mochawesome para relatórios visuais
+- Observação: Testes adicionais estão pendentes para ampliar a cobertura e estabilizar cenários edge cases.
 
 ## 📚 Documentações
 
@@ -376,11 +379,13 @@ hospital-appointment/
 
 Este projeto faz parte de um portfólio em desenvolvimento. Os próximos passos incluem:
 
-- ✅ **Aplicação completa** (Concluído)
-- ✅ **API documentada (Swagger)** (Concluído)
-- ✅ **Testes E2E com Cypress e reporter** (Concluído/Em evolução)
-- 📊 **Relatórios e métricas adicionais** (Planejado)
-- 🚀 **Deploy em produção** (Planejado)
+- ✅ Aplicação funcional com persistência
+- ✅ API documentada (Swagger)
+- 🧪 Testes E2E com Cypress e reporter (em evolução)
+- 🧩 Aumentar cobertura de testes e casos negativos/edge cases
+- 🐛 Investigar e tratar bugs conhecidos (ver `documentation/PLANO_E_ESTRATEGIA_DE_TESTES/BUG_REPORTS.md`)
+- 📊 Relatórios e métricas adicionais
+- 🚀 Deploy em produção
 
 ## 👨‍💻 Sobre o Desenvolvedor
 

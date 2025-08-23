@@ -12,13 +12,19 @@ const dataComHoras = (horas) => {
 
 const dataAtual = () => {
     const data = new Date();
-    return data.toISOString().split('T')[0];
+    const dd = String(data.getDate()).padStart(2, '0');
+    const mm = String(data.getMonth() + 1).padStart(2, '0');
+    const yyyy = data.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
 };
 
 const dataOntem = () => {
     const data = new Date();
     data.setDate(data.getDate() - 1);
-    return data.toISOString().split('T')[0];
+    const dd = String(data.getDate()).padStart(2, '0');
+    const mm = String(data.getMonth() + 1).padStart(2, '0');
+    const yyyy = data.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
 };
 
 const dataPorExtenso = (dias = 0, horas = 0) => {

@@ -29,7 +29,7 @@ describe("Login", () => {
     })
 
     it("Ao não preencher e-mail e submeter o formulário, deve exibir mensagem de erro e não autenticar o usuário", () => {
-      cy.get("#menuLogin").click()
+      cy.get('[data-testid="menu-login"]').click()
       cy.contains("h2", "Login")
       cy.get("#cpf").type(users.cpf)
       cy.get("#password").type(users.password)
@@ -37,7 +37,7 @@ describe("Login", () => {
       cy.contemTexto("#login-message", "Todos os campos são obrigatórios")
     })
     it("Ao não preencher CPF e submeter o formulário, deve exibir mensagem de erro e não autenticar o usuário", () => {
-      cy.get("#menuLogin").click()
+      cy.get('[data-testid="menu-login"]').click()
       cy.contains("h2", "Login")
       cy.get("#email").type(users.email)
       cy.get("#password").type(users.password)
@@ -45,7 +45,7 @@ describe("Login", () => {
       cy.contemTexto("#login-message", "Todos os campos são obrigatórios")
     })
     it("Ao não preencher senha e submeter o formulário, deve exibir mensagem de erro e não autenticar o usuário", () => {
-      cy.get("#menuLogin").click()
+      cy.get('[data-testid="menu-login"]').click()
       cy.contains("h2", "Login")
       cy.get("#email").type(users.email)
       cy.get("#cpf").type(users.cpf)
@@ -53,23 +53,23 @@ describe("Login", () => {
       cy.contemTexto("#login-message", "Todos os campos são obrigatórios")
     })
     it('Ao tentar acessar funcionalidade sem login, deve redirecionar para a página de login', ()=>{
-      cy.visit('/agendamento')
-      cy.get('#menuLogin').should('be.visible')
+      cy.visit('/#agendar')
+      cy.get('[data-testid="menu-login"]').should('be.visible')
     })
   })
   describe('Logout', ()=>{
     it('Ao clicar no nome do usuário e selecionar Sair, deve desautenticar e redirecionar para a página de login', ()=>{
       cy.login(users.email, users.cpf, users.password)
       cy.get('#userDropdown').click()
-      cy.get('#logoutBtn').click()
-      cy.get('#menuLogin').should('be.visible')
+      cy.get('[data-testid="menu-logout"]').click()
+      cy.get('[data-testid="menu-login"]').should('be.visible')
     })
     it('Após logout, ao acessar agendamento, deve exigir login novamente', () => {
       cy.login(users.email, users.cpf, users.password)
       cy.get('#userDropdown').click()
-      cy.get('#logoutBtn').click()
-      cy.visit('/agendamento')
-      cy.get('#menuLogin').should('be.visible')
+      cy.get('[data-testid="menu-logout"]').click()
+      cy.visit('/#agendar')
+      cy.get('[data-testid="menu-login"]').should('be.visible')
     })
   })
   

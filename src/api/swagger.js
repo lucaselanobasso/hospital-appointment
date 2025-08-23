@@ -261,7 +261,7 @@ const options = {
       }
     }
   },
-  apis: ['./src/api/server.js'], // Caminho para os arquivos com anotações Swagger
+  apis: ['./src/api/server.js'], 
 };
 
 const specs = swaggerJsdoc(options);
